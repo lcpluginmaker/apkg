@@ -6,9 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-<ItemGroup>
+  <ItemGroup>
     <Reference Include="ILeoConsole">
-	    <HintPath>/usr/include/LeoConsole/ILeoConsole.dll</HintPath>
+      <HintPath>/usr/include/LeoConsole/ILeoConsole.dll</HintPath>
     </Reference>
   </ItemGroup>
 
