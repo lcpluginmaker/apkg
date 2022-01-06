@@ -30,6 +30,10 @@ namespace LeoConsole_apkg
         case "get":
           apkg_do_get();
           break;
+
+        case "list-installed":
+          apkg_do_list_installed();
+          break;
         
         default:
           Console.WriteLine("apkg: unknown option " + _InputProperties[1]);
@@ -97,6 +101,12 @@ namespace LeoConsole_apkg
       Console.WriteLine("please use pkg get " + InputProperties[2]);
     }
 
+    private void apkg_do_list_installed() {
+      foreach (string filename in Directory.GetFiles(Path.Join("data", "plugins"))){
+        Console.WriteLine(filename);
+      }
+    }
+
     private void apkg_do_help() {
       Console.WriteLine("apkg is an advanced package tool for LeoConsole");
       Console.WriteLine("");
@@ -105,10 +115,16 @@ namespace LeoConsole_apkg
       Console.WriteLine("which is very handy for quick development and testing.");
       Console.WriteLine("");
       Console.WriteLine("Available options:");
-      Console.WriteLine("    help: print this help");
-      Console.WriteLine("    get:  install plugin from default repo <name>, git repo <https://*.git>, folder <file://*> or url <https://*.dll>");
+      Console.WriteLine("    help:           print this help");
+      Console.WriteLine("    get:            install plugin from default repo <name>, git repo <https://*.git>, folder <file://*> or url <https://*.dll>");
+      Console.WriteLine("    list-installed: list installed .dll plugin files");
       Console.WriteLine("");
-      Console.WriteLine("Source code is available on https://github.com/alexcoder04/LeoConsole-apkg");
+      Console.WriteLine("Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>");
+      Console.WriteLine("");
+      Console.WriteLine("LeoConsole-apkg-plugin Copyright (C) 2022 alexcoder04");
+      Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY.");
+      Console.WriteLine("This is free software, and you are welcome to redistribute it");
+      Console.WriteLine("under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt> for more details.");
       Console.WriteLine("");
     }
 
