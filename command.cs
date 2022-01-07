@@ -15,6 +15,7 @@ namespace LeoConsole_apkg
     public Action CommandFunktion { get { return () => Command(); } }
     private string[] _InputProperties;
     public string[] InputProperties { get { return _InputProperties; } set { _InputProperties = value; } }
+    public IData data = new ConsoleData();
 
     public void Command() {
       if (_InputProperties.Length < 2) {
@@ -33,6 +34,10 @@ namespace LeoConsole_apkg
 
         case "list-installed":
           apkg_do_list_installed();
+          break;
+
+        case "info":
+          apkg_do_info();
           break;
         
         default:
@@ -72,12 +77,18 @@ namespace LeoConsole_apkg
     private void apkg_do_list_installed() {
       Console.WriteLine("=> your installed plugin files:");
       try {
-        foreach (string filename in Directory.GetFiles(Path.Join("data", "plugins"))){
+        foreach (string filename in Directory.GetFiles(Path.Join(data.SavePath, "plugins"))){
           Console.WriteLine("   -> " + filename);
         }
       } catch (Exception e) {
         Console.WriteLine("   -> error: " + e.Message);
       }
+    }
+
+    private void apkg_do_info() {
+      Console.WriteLine(" => apkg plugin information");
+      Console.WriteLine("   -> cache/download directory: " + Path.Join(data.DownloadPath, "plugins"));
+      Console.WriteLine("   -> installation directory: " + Path.Join(data.SavePath, "plugins"));
     }
 
     private void apkg_do_help() {
@@ -91,6 +102,7 @@ namespace LeoConsole_apkg
       Console.WriteLine("    help:           print this help");
       Console.WriteLine("    get:            install plugin from default repo <name>, git repo <https://*.git>, folder <file://*> or url <https://*.dll>");
       Console.WriteLine("    list-installed: list installed .dll plugin files");
+      Console.WriteLine("    info:           print where the plugins are downloaded and installed to");
       Console.WriteLine("");
       Console.WriteLine("Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>");
       Console.WriteLine("");
@@ -122,13 +134,16 @@ namespace LeoConsole_apkg
     // compiled dll from http
     private void get_http(string url) {
       Console.WriteLine(" => installing compiled dll file");
-      string downloadPath = Path.Join("data", "tmp", "plugins", Path.GetFileName(url));
+      string downloadPath = Path.Join(data.DownloadPath, "plugins", Path.GetFileName(url));
+      if (!createPluginsDownloadDir()) {
+        return;
+      }
       if (!downloadFile(url, downloadPath)) {
         return;
       }
       Console.WriteLine(" => installing downloaded dll...");
       try {
-        File.Copy(downloadPath, Path.Join("data", "plugins", Path.GetFileName(downloadPath)), true);
+        File.Copy(downloadPath, Path.Join(data.SavePath, "plugins", Path.GetFileName(downloadPath)), true);
       } catch (Exception e) {
         Console.WriteLine("   -> error installing: " + e.Message);
         return;
@@ -140,13 +155,38 @@ namespace LeoConsole_apkg
     private void get_git(string url) {
       Console.WriteLine(" => installing from git repository");
       string name = Path.GetFileName(url).Split(".")[0];
-      if (!gitClone(url, Path.Join("data", "tmp", "plugins"), name)) {
+      try {
+        if (Directory.Exists(Path.Join(data.DownloadPath, "plugins", name))) {
+          Console.WriteLine("   -> download directory already exists. override [y/n] ? ");
+          string answer = Console.ReadLine();
+          switch (answer) {
+            case "y":
+              if (!deleteDirectory(Path.Join(data.DownloadPath, "plugins", name))) {
+                return;
+              }
+              break;
+            case "Y":
+              if (!deleteDirectory(Path.Join(data.DownloadPath, "plugins", name))) {
+                return;
+              }
+              break;
+            default:
+              Console.WriteLine("   -> operation aborted");
+              return;
+              break;
+          }
+        }
+      } catch (Exception e) {
+        Console.WriteLine("   -> error while checking download location: " + e.Message);
         return;
       }
-      if (!compileFolder(Path.Join("data", "tmp", "plugins", name))) {
+      if (!gitClone(url, Path.Join(data.DownloadPath, "plugins"), name)) {
         return;
       }
-      if (!install_dlls(Path.Join("data", "tmp", "plugins", name))) {
+      if (!compileFolder(Path.Join(data.DownloadPath, "plugins", name))) {
+        return;
+      }
+      if (!install_dlls(Path.Join(data.DownloadPath, "plugins", name))) {
         return;
       }
       Console.WriteLine(" => " + url + " was installed. restart LeoConsole to load it");
@@ -173,8 +213,8 @@ namespace LeoConsole_apkg
       try {
         foreach (string filename in Directory.GetFiles(Path.Join(from_folder, "bin", "Debug", "net6.0"))){
           if (filename.EndsWith(".dll")){
-            Console.WriteLine("   -> copying " + filename + " to " + Path.Join("data", "plugins", Path.GetFileName(filename)) + "...");
-            File.Copy(filename, Path.Join("data", "plugins", Path.GetFileName(filename)), true);
+            Console.WriteLine("   -> copying " + filename + " to " + Path.Join(data.SavePath, "plugins", Path.GetFileName(filename)) + "...");
+            File.Copy(filename, Path.Join(data.SavePath, "plugins", Path.GetFileName(filename)), true);
           }
         }
       } catch (Exception e) {
@@ -187,6 +227,9 @@ namespace LeoConsole_apkg
     // clone a repository to given location
     private bool gitClone(string url, string parent, string folder) {
       Console.WriteLine(" => cloning " + url + " to " + parent + "/" + folder + "...");
+      if (!createPluginsDownloadDir()) {
+        return false;
+      }
       if (!runProcess("git", "clone " + url + " " + folder, parent)) {
         return false;
       }
@@ -221,6 +264,31 @@ namespace LeoConsole_apkg
         Console.WriteLine("   -> error running " + name + ": " + e.Message);
         return false;
       }
+      return true;
+    }
+
+    private bool createPluginsDownloadDir() {
+      if (Directory.Exists(Path.Join(data.DownloadPath, "plugins"))) {
+        return true;
+      }
+      try {
+        Directory.CreateDirectory(Path.Join(data.DownloadPath, "plugins"));
+      } catch (Exception e) {
+        Console.WriteLine("   -> error: cannot create plugins download dir: " + e.Message);
+        return false;
+      }
+      Console.WriteLine("   -> created plugins download directory");
+      return true;
+    }
+
+    private bool deleteDirectory(string folder) {
+      try {
+        Directory.Delete(folder, true);
+      } catch (Exception e) {
+        Console.WriteLine("   -> error deleting " + folder + ": " + e.Message);
+        return false;
+      }
+      Console.WriteLine("   -> " + folder + " deleted");
       return true;
     }
   }

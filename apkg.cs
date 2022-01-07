@@ -33,20 +33,6 @@ namespace LeoConsole_apkg
       
       _Commands = new List<ICommand>();
       _Commands.Add(new apkg());
-      
-      createPluginsDlDir();
-    }
-
-    private void createPluginsDlDir() {
-      if (Directory.Exists(Path.Combine("data", "tmp", "plugins"))) {
-        return;
-      }
-      try {
-        Directory.CreateDirectory(Path.Combine("data", "tmp", "plugins"));
-        Console.WriteLine("created plugins download directory");
-      } catch (Exception e) {
-        Console.WriteLine("apkg: Warning: creating plugins download directory failed: " + e.Message);
-      }
     }
   }
 }
