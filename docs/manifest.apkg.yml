@@ -1,0 +1,22 @@
+
+# this is an example manifest file, which contains all possible options
+# the manifest file tells apkg how to build the plugin
+
+manifestVersion: 1.0
+
+# your unique package name
+packageName: apkg
+
+# how to build the package
+build:
+  command: dotnet # command to run
+  args: build # arguments to pass to the command
+  folder: . # folder to run the command in
+
+# optional additional information
+project:
+  maintainer: alexcoder04
+  email: alexcoder04@protonmail.com
+  homepage: https://github.com/alexcoder04/LeoConsole-apkg # main project page
+  bugTracker: https://github.com/alexcoder04/LeoConsole-apkg/issues # where to report bugs
+
