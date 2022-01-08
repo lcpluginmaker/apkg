@@ -27,8 +27,10 @@ namespace LeoConsole_apkg
         case "get": apkg_do_get(); break;
         case "help": apkg_do_help(); break;
         case "info": apkg_do_info(); break;
+        case "install": apkg_do_get(); break;
         case "list-available": apkg_do_list_available(); break;
         case "list-installed": apkg_do_list_installed(); break;
+        case "remove": apkg_do_remove(); break;
         case "search": apkg_do_search(); break;
         case "update": apkg_do_update(); break;
         default: messageErr0("apkg: unknown option " + _InputProperties[1]); break;
@@ -77,6 +79,30 @@ namespace LeoConsole_apkg
       } catch (Exception e) {
         messageErr1(e.Message);
       }
+    }
+
+    private void apkg_do_remove() {
+      if (_InputProperties.Length < 3){
+        messageErr0("you need to provide a package name or location");
+        return;
+      }
+      string file = _InputProperties[2];
+      if (!file.EndsWith(".dll")) {
+        file = file + ".dll";
+      }
+      file = Path.Join(data.SavePath, "plugins", file);
+      messageSuc0("uninstalling " + file + "...");
+      try {
+        if (!File.Exists(file)) {
+          messageErr1("file does not exist");
+          return;
+        }
+        File.Delete(file);
+      } catch (Exception e) {
+        messageErr1("cannot remove: " + e.Message);
+        return;
+      }
+      messageSuc1("uninstalled successfully. restart LeoConsole for changes to take effect");
     }
 
     private void apkg_do_list_available() {
@@ -133,11 +159,12 @@ namespace LeoConsole_apkg
       Console.WriteLine("which is very handy for quick development and testing.");
       Console.WriteLine("");
       Console.WriteLine("Available options:");
-      Console.WriteLine("    get:            install plugin from default repo <name>, git repo <https://*.git>, folder <file://*> or url <https://*.dll>");
+      Console.WriteLine("    get/install:    install plugin from default repo <name>, git repo <https://*.git>, folder <file://*> or url <https://*.dll>");
       Console.WriteLine("    help:           print this help");
       Console.WriteLine("    info:           print where the plugins are downloaded and installed to");
       Console.WriteLine("    list-available: list plugins available in the default pkg repo");
       Console.WriteLine("    list-installed: list installed .dll plugin files");
+      Console.WriteLine("    remove:         remove .dll file");
       Console.WriteLine("    search:         search for a package in the default repos");
       Console.WriteLine("    update:         update package database");
       Console.WriteLine("");
