@@ -1,13 +1,11 @@
 ﻿using System.IO;
+using System.Reflection;
 using ILeoConsole;
 using ILeoConsole.Plugin;
 using ILeoConsole.Core;
 
-namespace LeoConsole_apkg
-{
-
-  public class ConsoleData : IData
-  {
+namespace LeoConsole_apkg {
+  public class ConsoleData : IData {
     public static User _User;
     public User User { get { return _User; } set { _User = value; } }
     public static string _SavePath;
@@ -17,8 +15,7 @@ namespace LeoConsole_apkg
     public string Version { get { return "?"; } } // this will be removed soon
   }
   
-  public class ApkgPlugin : IPlugin
-  {
+  public class ApkgPlugin : IPlugin {
     public string Name { get { return "apkg"; } }
     public string Explanation { get { return "advanced package tool (apt lol)"; } }
     
