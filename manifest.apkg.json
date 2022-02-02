@@ -1,0 +1,15 @@
+{
+  "manifestVersion": 1.0,
+  "packageName": "apkg",
+  "build": {
+    "command": "dotnet",
+    "args": "build",
+    "folder": "."
+  },
+  "project": {
+    "maintainer": "alexcoder04",
+    "email": "alexcoder04@protonmail.com",
+    "homepage": "https://github.com/alexcoder04/LeoConsole-apkg",
+    "bugTracker": "https://github.com/alexcoder04/LeoConsole-apkg/issues"
+  }
+}
