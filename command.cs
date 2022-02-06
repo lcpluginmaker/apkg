@@ -7,7 +7,7 @@ namespace LeoConsole_apkg {
   {
     // ------- DEFAULT PLUGIN STUFF -------
     public string Name { get { return "apkg"; } }
-    public string Description { get { return "advaned package management"; } }
+    public string Description { get { return "advanced package management"; } }
     public Action CommandFunktion { get { return () => Command(); } }
     private string[] _InputProperties;
     public string[] InputProperties { get { return _InputProperties; } set { _InputProperties = value; } }
@@ -18,7 +18,7 @@ namespace LeoConsole_apkg {
 
     public void Command() {
       if (_InputProperties.Length < 2) {
-        output.MessageErr0("you need to provide an argument\n");
+        output.MessageErr0("you need to provide a subcommand\n");
         apkg_do_help();
         return;
       }
@@ -32,7 +32,7 @@ namespace LeoConsole_apkg {
         case "remove": apkg_do_remove(); break;
         case "search": apkg_do_search(); break;
         case "update": apkg_do_update(); break;
-        default: output.MessageErr0("apkg: unknown option " + _InputProperties[1]); break;
+        default: output.MessageErr0("apkg: unknown subcommand '" + _InputProperties[1] + "'"); break;
       }
     }
 
@@ -82,7 +82,7 @@ namespace LeoConsole_apkg {
 
     private void apkg_do_remove() {
       if (_InputProperties.Length < 3){
-        output.MessageErr0("you need to provide a package name or location");
+        output.MessageErr0("you need to provide the dll file name");
         return;
       }
       string file = _InputProperties[2];
@@ -106,7 +106,7 @@ namespace LeoConsole_apkg {
 
     private void apkg_do_list_available() {
       if (!File.Exists(Path.Join(data.SavePath, "pkg", "PackageList.txt"))) {
-        output.MessageErr0("package database could not be found. try pkg update");
+        output.MessageErr0("package database could not be found. try 'pkg update'");
         return;
       }
       output.MessageSuc0("available packages:");
@@ -122,7 +122,7 @@ namespace LeoConsole_apkg {
     
     private void apkg_do_search() {
       if (_InputProperties.Length < 3){
-        output.MessageErr0("you need to provide a package name or location");
+        output.MessageErr0("you need to provide a search term");
         return;
       }
       if (!File.Exists(Path.Join(data.SavePath, "pkg", "PackageList.txt"))) {
@@ -147,33 +147,34 @@ namespace LeoConsole_apkg {
     private void apkg_do_info() {
       output.MessageSuc0("apkg plugin information");
       output.MessageSuc1("cache/download directory: " + Path.Join(data.DownloadPath, "plugins"));
-      output.MessageSuc1("installation directory: " + Path.Join(data.SavePath, "plugins"));
+      output.MessageSuc1("installation directory:   " + Path.Join(data.SavePath, "plugins"));
     }
 
     private void apkg_do_help() {
-      Console.WriteLine("apkg is an advanced package tool for LeoConsole");
-      Console.WriteLine("");
-      Console.WriteLine("Besides the default functionality that the standard pkg command provides,");
-      Console.WriteLine("it allows you to install plugins from unofficial repositories or even local folders,");
-      Console.WriteLine("which is very handy for quick development and testing.");
-      Console.WriteLine("");
-      Console.WriteLine("Available options:");
-      Console.WriteLine("    get/install:    install plugin from default repo <name>, git repo <https://*.git>, folder <file://*> or url <https://*.dll>");
-      Console.WriteLine("    help:           print this help");
-      Console.WriteLine("    info:           print where the plugins are downloaded and installed to");
-      Console.WriteLine("    list-available: list plugins available in the default pkg repo");
-      Console.WriteLine("    list-installed: list installed .dll plugin files");
-      Console.WriteLine("    remove:         remove .dll file");
-      Console.WriteLine("    search:         search for a package in the default repos");
-      Console.WriteLine("    update:         update package database");
-      Console.WriteLine("");
-      Console.WriteLine("Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>");
-      Console.WriteLine("");
-      Console.WriteLine("LeoConsole-apkg-plugin Copyright (C) 2022 alexcoder04");
-      Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY.");
-      Console.WriteLine("This is free software, and you are welcome to redistribute it");
-      Console.WriteLine("under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt> for more details.");
-      Console.WriteLine("");
+      Console.WriteLine(@"
+apkg is an advanced package tool for LeoConsole
+
+Besides the default functionality that the standard pkg command provides, it
+allows you to install plugins from unofficial repositories or even local
+folders, which is very handy for quick development and testing.
+
+Available options:
+    get/install:    install plugin from default repo <name>, git repo <https://*.git>, folder <file://*> or url <https://*.dll>
+    help:           print this help
+    info:           print where the plugins are downloaded and installed to
+    list-available: list plugins available in the default pkg repo
+    list-installed: list installed .dll plugin files
+    remove:         remove .dll file
+    search:         search for a package in the default repos
+    update:         update package database
+
+Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>
+
+LeoConsole-apkg-plugin Copyright (C) 2022 alexcoder04
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt> for more details.
+");
     }
   }
 }

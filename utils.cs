@@ -57,18 +57,19 @@ namespace LeoConsole_apkg {
 
     // compile a repository
     public bool CompileFolder(string folder) {
-      output.MessageSuc0("compiling " + folder + " with dotnet...");
+      output.MessageSuc0("compiling " + folder);
       if (File.Exists(Path.Join(folder, "manifest.apkg.json"))) {
+        output.MessageSuc1("found manifest file, parsing...");
         string text = System.IO.File.ReadAllText(Path.Join(folder, "manifest.apkg.json"));
         Manifest manifestData = JsonSerializer.Deserialize<Manifest>(text);
-        output.MessageSuc1("compiling package " + manifestData.packageName + " by " + manifestData.project.maintainer);
+        output.MessageSuc1("compiling package '" + manifestData.packageName + "' by '" + manifestData.project.maintainer + "'...");
         output.MessageSuc1("compiling with '" + manifestData.build.command + " " + manifestData.build.args + "' in 'project://" + manifestData.build.folder + "'...");
         if (!RunProcess(manifestData.build.command, manifestData.build.args, Path.Join(folder, manifestData.build.folder))) {
           return false;
         }
       } else {
-        output.MessageWarn1("manifest.apkg.json not found, trying 'dotnet build'...");
-        if (!RunProcess("dotnet", "build", folder)) {
+        output.MessageWarn1("manifest file not found, trying 'dotnet build --nologo' in 'project://.'...");
+        if (!RunProcess("dotnet", "build --nologo", folder)) {
           return false;
         }
       }

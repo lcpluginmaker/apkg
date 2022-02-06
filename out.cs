@@ -10,14 +10,14 @@ namespace LeoConsole_apkg {
     }
 
     public void MessageErr0(string msg) {
-      writeColoredLine("§c=>§r error: " + msg);
+      writeColoredLine("§c==>§r error: " + msg);
     }
     public void MessageErr1(string msg) {
       writeColoredLine("  §c->§r error: " + msg);
     }
 
     public void MessageWarn0(string msg) {
-      writeColoredLine("§e=>§r warning: " + msg);
+      writeColoredLine("§e==>§r warning: " + msg);
     }
     public void MessageWarn1(string msg) {
       writeColoredLine("  §e->§r warning: " + msg);
