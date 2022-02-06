@@ -4,6 +4,7 @@ namespace LeoConsole_apkg {
     public string command { get; set; }
     public string args { get; set; }
     public string folder { get; set; }
+    public string[] dlls { get; set; }
   }
 
   public class ManifestProjectData {

@@ -5,7 +5,7 @@ Manifest version:
 
 ```json
 {
-    "manifestVersion": 1.0,
+    "manifestVersion": 1.1,
 ```
 
 Your unique package name:
@@ -14,13 +14,16 @@ Your unique package name:
     "packageName": "apkg",
 ```
 
-How to build the package:
+How to build the package (the dlls array tells which dll files need to be installed):
 
 ```json
     "build": {
         "command": "dotnet",
         "args": "build",
-        "folder": "."
+        "folder": ".",
+        "dlls": [
+            "apkg.dll"
+        ]
     },
 ```
 

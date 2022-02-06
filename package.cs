@@ -6,11 +6,12 @@ using System.Text.Json;
 
 namespace LeoConsole_apkg {
   public class ApkgPackage {
-    private ApkgUtils utils = new ApkgUtils();
     private ApkgOutput output = new ApkgOutput();
+    private ApkgUtils utils = new ApkgUtils();
+    public Manifest PkgManifest;
+    public float CurrentManifestVersion = 1.1F;
     public string Folder;
     public string SavePath;
-    public Manifest PkgManifest;
 
     public ApkgPackage(string folder, string savePath) {
       Folder = folder;
@@ -26,6 +27,9 @@ namespace LeoConsole_apkg {
       output.MessageSuc1("found manifest file, parsing...");
       string text = System.IO.File.ReadAllText(Path.Join(Folder, "manifest.apkg.json"));
       PkgManifest = JsonSerializer.Deserialize<Manifest>(text);
+      if (PkgManifest.manifestVersion != CurrentManifestVersion) {
+        output.MessageWarn1("outdated manifest version, this can lead to errors");
+      }
     }
 
     private void loadDefaultManifest() {
@@ -51,14 +55,39 @@ namespace LeoConsole_apkg {
       return true;
     }
 
-    public bool InstallDLLs() {
-      output.MessageSuc0("installing dlls from " + Folder + "...");
+    // TODO legacy 1.0
+    private bool legacyDLLsInstall() {
       try {
         foreach (string filename in Directory.GetFiles(Path.Join(Folder, "bin", "Debug", "net6.0"))){
           if (filename.EndsWith(".dll")){
             output.MessageSuc1("copying " + filename + " to " + Path.Join(SavePath, "plugins", Path.GetFileName(filename)) + "...");
             File.Copy(filename, Path.Join(SavePath, "plugins", Path.GetFileName(filename)), true);
           }
+        }
+      } catch (Exception e) {
+        output.MessageErr1("cannot install: " + e.Message);
+        return false;
+      }
+      return true;
+    }
+    // TODO endlegacy 1.0
+
+    public bool InstallDLLs() {
+      output.MessageSuc0("installing dlls from " + Folder + "...");
+      // TODO legacy 1.0
+      if (PkgManifest.manifestVersion < 1.1F) {
+        output.MessageWarn1("old manifest version, using legacy install");
+        if (!legacyDLLsInstall()) {
+          return false;
+        }
+        return true;
+      }
+      // TODO endlegacy 1.0
+
+      try {
+        foreach (string filename in PkgManifest.build.dlls){
+          output.MessageSuc1("copying " + filename + " to " + Path.Join(SavePath, "plugins", Path.GetFileName(filename)) + "...");
+          File.Copy(Path.Join(Folder, "bin", "Debug", "net6.0", filename), Path.Join(SavePath, "plugins", Path.GetFileName(filename)), true);
         }
       } catch (Exception e) {
         output.MessageErr1("cannot install: " + e.Message);
