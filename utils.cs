@@ -55,28 +55,6 @@ namespace LeoConsole_apkg {
       return true;
     }
 
-    // compile a repository
-    public bool CompileFolder(string folder) {
-      output.MessageSuc0("compiling " + folder);
-      if (File.Exists(Path.Join(folder, "manifest.apkg.json"))) {
-        output.MessageSuc1("found manifest file, parsing...");
-        string text = System.IO.File.ReadAllText(Path.Join(folder, "manifest.apkg.json"));
-        Manifest manifestData = JsonSerializer.Deserialize<Manifest>(text);
-        output.MessageSuc1("compiling package '" + manifestData.packageName + "' by '" + manifestData.project.maintainer + "'...");
-        output.MessageSuc1("compiling with '" + manifestData.build.command + " " + manifestData.build.args + "' in 'project://" + manifestData.build.folder + "'...");
-        if (!RunProcess(manifestData.build.command, manifestData.build.args, Path.Join(folder, manifestData.build.folder))) {
-          return false;
-        }
-      } else {
-        output.MessageWarn1("manifest file not found, trying 'dotnet build --nologo' in 'project://.'...");
-        if (!RunProcess("dotnet", "build --nologo", folder)) {
-          return false;
-        }
-      }
-      output.MessageSuc1("compiled " + folder + " successfully");
-      return true;
-    }
-
     // download a file to given location
     public bool DownloadFile(string url, string location) {
       output.MessageSuc0("downloading " + url + " to " + location + "...");
@@ -85,23 +63,6 @@ namespace LeoConsole_apkg {
         webClient.DownloadFile(url, location);
       } catch (Exception e) {
         output.MessageErr1("cannot download: " + e.Message);
-        return false;
-      }
-      return true;
-    }
-
-    // install all dlls from bin subfolder of a repository
-    public bool InstallDLLs(string from_folder, string savePath) {
-      output.MessageSuc0("installing dlls from " + from_folder + "...");
-      try {
-        foreach (string filename in Directory.GetFiles(Path.Join(from_folder, "bin", "Debug", "net6.0"))){
-          if (filename.EndsWith(".dll")){
-            output.MessageSuc1("copying " + filename + " to " + Path.Join(savePath, "plugins", Path.GetFileName(filename)) + "...");
-            File.Copy(filename, Path.Join(savePath, "plugins", Path.GetFileName(filename)), true);
-          }
-        }
-      } catch (Exception e) {
-        output.MessageErr1("cannot install: " + e.Message);
         return false;
       }
       return true;

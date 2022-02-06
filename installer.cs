@@ -11,10 +11,11 @@ namespace LeoConsole_apkg {
         output.MessageErr1("" + folder + " does not exist");
         return;
       }
-      if (!utils.CompileFolder(folder)) {
+      ApkgPackage package = new ApkgPackage(folder, savePath);
+      if (!package.Compile()) {
         return;
       }
-      if (!utils.InstallDLLs(folder, savePath)) {
+      if (!package.InstallDLLs()) {
         return;
       }
       output.MessageSuc0("" + folder + " was installed. restart LeoConsole to load it");
@@ -37,7 +38,7 @@ namespace LeoConsole_apkg {
         output.MessageErr1("cannot instal: " + e.Message);
         return;
       }
-      output.MessageSuc0("" + url + " was installed. restart LeoConsole to enable it.");
+      output.MessageSuc0(url + " was installed. restart LeoConsole to enable it.");
     }
 
     // compiling from git repository
@@ -72,13 +73,14 @@ namespace LeoConsole_apkg {
       if (!utils.GitClone(url, Path.Join(dlPath, "plugins"), name, dlPath)) {
         return;
       }
-      if (!utils.CompileFolder(Path.Join(dlPath, "plugins", name))) {
+      ApkgPackage package = new ApkgPackage(Path.Join(dlPath, "plugins", name), savePath);
+      if (!package.Compile()) {
         return;
       }
-      if (!utils.InstallDLLs(Path.Join(dlPath, "plugins", name), savePath)) {
+      if (!package.InstallDLLs()) {
         return;
       }
-      output.MessageSuc0("" + url + " was installed. restart LeoConsole to load it");
+      output.MessageSuc0(url + " was installed. restart LeoConsole to load it");
       return;
     }
   }
