@@ -22,6 +22,10 @@ namespace LeoConsole_apkg {
         apkg_do_help();
         return;
       }
+      if (!checkVar()) {
+        output.MessageErr0("errors with var files");
+        return;
+      }
       switch (_InputProperties[1]) {
         case "get": apkg_do_get(); break;
         case "help": apkg_do_help(); break;
@@ -146,8 +150,9 @@ namespace LeoConsole_apkg {
 
     private void apkg_do_info() {
       output.MessageSuc0("apkg plugin information");
-      output.MessageSuc1("cache/download directory: " + Path.Join(data.DownloadPath, "plugins"));
-      output.MessageSuc1("installation directory:   " + Path.Join(data.SavePath, "plugins"));
+      output.MessageSuc1("cache/download directory:  " + Path.Join(data.DownloadPath, "plugins"));
+      output.MessageSuc1("installation directory:    " + Path.Join(data.SavePath, "plugins"));
+      output.MessageSuc1("config/database directory: " + Path.Join(data.SavePath, "var", "apkg"));
     }
 
     private void apkg_do_help() {
@@ -175,6 +180,55 @@ This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt> for more details.
 ");
+    }
+
+    // HELPER FUNCTIONS
+    private bool checkVar() {
+      string[] folders = {Path.Join(data.SavePath, "var"), Path.Join(data.SavePath, "var", "apkg")};
+      foreach (string folder in folders) {
+        if (!Directory.Exists(folder)) {
+          try {
+            Directory.CreateDirectory(folder);
+          } catch (Exception e) {
+            output.MessageErr1("cannot create var dir: " + e.Message);
+            return false;
+          }
+        }
+      }
+      // create config
+      string configFile = Path.Join(data.SavePath, "var", "apkg", "config");
+      if (!File.Exists(configFile)) {
+        firstRun();
+        string[] lines = {"notFirstRun"};
+        using (StreamWriter outputFile = new StreamWriter(configFile)) {
+          foreach (string line in lines) {
+            outputFile.WriteLine(line);
+          }
+        }
+      }
+      // read config
+      IEnumerable<string> config = File.ReadLines(configFile);
+      // show first run message if necessary
+      if (!config.Contains("notFirstRun")) {
+        firstRun();
+      }
+      // end
+      return true;
+    }
+
+    private void firstRun() {
+      Console.WriteLine(@"
+You are running apkg for the first time. Please READ CAREFULLY following information:
+
+ - apkg installs plugin files into $SAVEPATH/plugins and $SAVEPATH/share. These
+   files are then managed by apkg. Manually changing or deleting them may cause
+   irrecoverable errors.
+ - apkg keeps track of installed plugins and other information in $SAVEPATH/var/apkg
+   Modifing these files manually or deleting them will brick your install.
+
+Enjoy apkg!
+");
+      Console.ReadKey();
     }
   }
 }

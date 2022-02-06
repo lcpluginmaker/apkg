@@ -12,4 +12,5 @@
    packages.
  - `$SAVEPATH/plugins` - This is where installed `.dll` plugin files go.
  - `$SAVEPATH/share` - This is where additional plugins files go to.
+ - `$SAVEPATH/var` - Config files and databases.
 

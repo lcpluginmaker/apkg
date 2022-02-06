@@ -6,12 +6,12 @@ using ILeoConsole.Core;
 
 namespace LeoConsole_apkg {
   public class ConsoleData : IData {
-    public static User _User;
     public User User { get { return _User; } set { _User = value; } }
-    public static string _SavePath;
-    public string SavePath { get { return _SavePath; } set { _SavePath = value; } }
+    public static User _User;
     public static string _DownloadPath;
+    public static string _SavePath;
     public string DownloadPath { get { return _DownloadPath; } set { _DownloadPath = value; } }
+    public string SavePath { get { return _SavePath; } set { _SavePath = value; } }
     public string Version { get { return "?"; } } // this will be removed soon
   }
   
