@@ -18,6 +18,16 @@ pkg get apkg
 reboot
 ```
 
+### Bleeding-edge
+
+You can also try out the latest unpublished version (directly from the git repo),
+if you have apkg already installed (keep in mind, it could be unstable):
+
+```
+apkg get https://github.com/alexcoder04/LeoConsole-apkg.git
+reboot
+```
+
 ## Naming
 
 The name consists of multiple ideas merged together:

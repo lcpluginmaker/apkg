@@ -1,6 +1,10 @@
 
 # Example manifest file with all possible options
 
+The manifest file tells apkg how to build a package.
+
+---
+
 Manifest version:
 
 ```json
@@ -38,4 +42,6 @@ Optional additional information:
     }
 }
 ```
+
+---
 
