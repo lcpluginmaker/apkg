@@ -3,9 +3,7 @@ using ILeoConsole.Plugin;
 using ILeoConsole;
 
 namespace LeoConsole_apkg {
-  public class apkg : ICommand
-  {
-    // ------- DEFAULT PLUGIN STUFF -------
+  public class apkg : ICommand {
     public string Name { get { return "apkg"; } }
     public string Description { get { return "advanced package management"; } }
     public Action CommandFunktion { get { return () => Command(); } }
@@ -52,28 +50,23 @@ namespace LeoConsole_apkg {
           installer.GetGit(url, data.DownloadPath, data.SavePath);
           return;
         }
-        if (url.EndsWith(".dll")) {
-          installer.GetHTTP(url, data.DownloadPath, data.SavePath);
-          return;
-        }
-        output.MessageErr0("only downoading .dll files or git repositories is supported");
+        output.MessageErr0("only downoading git repositories is supported");
         return;
       }
-      if (_InputProperties[2].StartsWith("file://")){
+      if (_InputProperties[2].StartsWith("compile://")){
         string folder = _InputProperties[2].Substring(7, _InputProperties[2].Length-7);
         installer.GetFile(folder, data.SavePath);
         return;
       }
-      output.MessageErr0("currently plugins have no permission to call default LeoConsole functions");
-      output.MessageSuc1("run 'pkg get " + InputProperties[2] + "' instead");
+      installer.GetLCPKG(_InputProperties[2], data.SavePath);
     }
 
     private void apkg_do_update() {
-      output.MessageErr0("currently plugins have no permission to call default LeoConsole functions");
-      output.MessageSuc1("run 'pkg update' instead");
+      output.MessageErr0("update function is not implemented yet");
     }
 
     private void apkg_do_list_installed() {
+      output.MessageWarn0("Listing installed packages is not supported yet");
       output.MessageSuc0("your installed plugin files:");
       try {
         foreach (string filename in Directory.GetFiles(Path.Join(data.SavePath, "plugins"))){
@@ -86,14 +79,15 @@ namespace LeoConsole_apkg {
 
     private void apkg_do_remove() {
       if (_InputProperties.Length < 3){
-        output.MessageErr0("you need to provide the dll file name");
+        output.MessageErr0("you need to provide an argument");
         return;
       }
-      string file = _InputProperties[2];
-      if (!file.EndsWith(".dll")) {
-        file = file + ".dll";
+      if (!_InputProperties[2].EndsWith(".dll")) {
+        output.MessageErr0("Uninstalling packages is not supported yet");
+        output.MessageSuc1("Try passing the dll file to remove it");
+        return;
       }
-      file = Path.Join(data.SavePath, "plugins", file);
+      string file = Path.Join(data.SavePath, "plugins", _InputProperties[2]);
       output.MessageSuc0("uninstalling " + file + "...");
       try {
         if (!File.Exists(file)) {
@@ -130,7 +124,7 @@ namespace LeoConsole_apkg {
         return;
       }
       if (!File.Exists(Path.Join(data.SavePath, "pkg", "PackageList.txt"))) {
-        output.MessageErr0("package database could not be found. try pkg update");
+        output.MessageErr0("package database could not be found. try 'pkg update'");
         return;
       }
       string keyword = _InputProperties[2];
@@ -175,7 +169,7 @@ Available options:
 
 Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>
 
-LeoConsole-apkg-plugin Copyright (C) 2022 alexcoder04
+LeoConsole-apkg-plugin Copyright (c) 2022 alexcoder04
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt> for more details.

@@ -3,7 +3,7 @@
   "packageName": "apkg",
   "build": {
     "command": "dotnet",
-    "args": ["build", "--nologo"],
+    "args": "build --nologo",
     "folder": ".",
     "dlls": ["apkg.dll"],
     "share": "./docs"

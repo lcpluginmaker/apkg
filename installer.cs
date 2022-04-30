@@ -1,8 +1,32 @@
+using System.IO.Compression;
 
 namespace LeoConsole_apkg {
   public class ApkgInstaller {
     private ApkgOutput output = new ApkgOutput();
     private ApkgUtils utils = new ApkgUtils();
+
+    // from package archive
+    public void GetLCPKG(string archiveFile, string savePath) {
+      if (!archiveFile.EndsWith(".lcpkg")) {
+        output.MessageErr1("this does not look like an apkg package archive");
+        return;
+      }
+      string extractPath = Path.Join(savePath, "tmp", "plugin-extract");
+      if (Directory.Exists(extractPath)) {
+        if (!utils.DeleteDirectory(extractPath)) {
+          output.MessageErr1("cannot clean plugin extract directory");
+          return;
+        }
+      }
+      try {
+        Directory.CreateDirectory(extractPath);
+      } catch (Exception e) {
+        output.MessageErr1("cannot create plugin extract dir: " + e.Message);
+        return;
+      }
+      ZipFile.ExtractToDirectory(archiveFile, extractPath);
+      // TODO
+    }
 
     // from local folder
     public void GetFile(string folder, string savePath) {
@@ -21,26 +45,6 @@ namespace LeoConsole_apkg {
       output.MessageSuc0("" + folder + " was installed. restart LeoConsole to load it");
     }
 
-    // compiled dll from http
-    public void GetHTTP(string url, string dlPath, string savePath) {
-      output.MessageSuc0("installing compiled dll file");
-      string downloadPath = Path.Join(dlPath, "plugins", Path.GetFileName(url));
-      if (!utils.CreatePluginsDownloadDir(dlPath)) {
-        return;
-      }
-      if (!utils.DownloadFile(url, downloadPath)) {
-        return;
-      }
-      output.MessageSuc0("installing downloaded dll...");
-      try {
-        File.Copy(downloadPath, Path.Join(savePath, "plugins", Path.GetFileName(downloadPath)), true);
-      } catch (Exception e) {
-        output.MessageErr1("cannot instal: " + e.Message);
-        return;
-      }
-      output.MessageSuc0(url + " was installed. restart LeoConsole to enable it.");
-    }
-
     // compiling from git repository
     public void GetGit(string url, string dlPath, string savePath) {
       output.MessageSuc0("installing from git repository");
@@ -49,13 +53,8 @@ namespace LeoConsole_apkg {
         if (Directory.Exists(Path.Join(dlPath, "plugins", name))) {
           output.MessageSuc1("download directory already exists. override [y/n] ? ");
           string answer = Console.ReadLine();
-          switch (answer) {
+          switch (answer.ToLower()) {
             case "y":
-              if (!utils.DeleteDirectory(Path.Join(dlPath, "plugins", name))) {
-                return;
-              }
-              break;
-            case "Y":
               if (!utils.DeleteDirectory(Path.Join(dlPath, "plugins", name))) {
                 return;
               }
