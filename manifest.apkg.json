@@ -1,11 +1,12 @@
 {
-  "manifestVersion": 1.1,
+  "manifestVersion": 2.0,
   "packageName": "apkg",
   "build": {
     "command": "dotnet",
-    "args": "build --nologo",
+    "args": ["build", "--nologo"],
     "folder": ".",
-    "dlls": ["apkg.dll"]
+    "dlls": ["apkg.dll"],
+    "share": "./docs"
   },
   "project": {
     "maintainer": "alexcoder04",

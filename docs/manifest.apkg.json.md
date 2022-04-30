@@ -9,7 +9,7 @@ Manifest version:
 
 ```json
 {
-    "manifestVersion": 1.1,
+    "manifestVersion": 2.0,
 ```
 
 Your unique package name:
@@ -23,11 +23,10 @@ How to build the package (the dlls array tells which dll files need to be instal
 ```json
     "build": {
         "command": "dotnet",
-        "args": "build",
+        "args": ["build"],
         "folder": ".",
-        "dlls": [
-            "apkg.dll"
-        ]
+        "dlls": ["apkg.dll"],
+        "share": "./docs"
     },
 ```
 

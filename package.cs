@@ -27,7 +27,7 @@ namespace LeoConsole_apkg {
       output.MessageSuc1("found manifest file, parsing...");
       string text = System.IO.File.ReadAllText(Path.Join(Folder, "manifest.apkg.json"));
       PkgManifest = JsonSerializer.Deserialize<Manifest>(text);
-      if (PkgManifest.manifestVersion != CurrentManifestVersion) {
+      if (PkgManifest.manifestVersion < CurrentManifestVersion) {
         output.MessageWarn1("outdated manifest version, this can lead to errors");
       }
     }
@@ -74,6 +74,10 @@ namespace LeoConsole_apkg {
 
     public bool InstallDLLs() {
       output.MessageSuc0("installing dlls from " + Folder + "...");
+      if (PkgManifest.manifestVersion < 1.1F) {
+        Console.WriteLine("Manifest version unsupported yet, please update apkg!");
+        return false;
+      }
       // TODO legacy 1.0
       if (PkgManifest.manifestVersion < 1.1F) {
         output.MessageWarn1("old manifest version, using legacy install");
