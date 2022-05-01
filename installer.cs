@@ -1,9 +1,11 @@
 using System.IO.Compression;
+using System.Text.Json;
 
 namespace LeoConsole_apkg {
   public class ApkgInstaller {
     private ApkgOutput output = new ApkgOutput();
     private ApkgUtils utils = new ApkgUtils();
+    private ApkgIntegrity integrity = new ApkgIntegrity();
 
     // from package archive
     public void GetLCPKG(string archiveFile, string savePath) {
@@ -11,6 +13,7 @@ namespace LeoConsole_apkg {
         output.MessageErr1("this does not look like an apkg package archive");
         return;
       }
+      output.MessageSuc1("preparing to extract package");
       string extractPath = Path.Join(savePath, "tmp", "plugin-extract");
       if (Directory.Exists(extractPath)) {
         if (!utils.DeleteDirectory(extractPath)) {
@@ -24,8 +27,40 @@ namespace LeoConsole_apkg {
         output.MessageErr1("cannot create plugin extract dir: " + e.Message);
         return;
       }
-      ZipFile.ExtractToDirectory(archiveFile, extractPath);
-      // TODO
+      output.MessageSuc1("extracting package");
+      try {
+        ZipFile.ExtractToDirectory(archiveFile, extractPath);
+      } catch (Exception e) {
+        output.MessageErr1("cannot extract plugin: " + e.Message);
+        return;
+      }
+      output.MessageSuc1("checking package integrity");
+      string text = File.ReadAllText(Path.Join(extractPath, "PKGINFO.json"));
+      PkgArchiveManifest manifest = JsonSerializer.Deserialize<PkgArchiveManifest>(text);
+      if (!integrity.CheckPkgConflicts(manifest.files, savePath)) {
+        output.MessageErr1("this package conflicts with some installed package");
+        return;
+      }
+      foreach (string file in manifest.files) {
+        output.MessageSuc1("copying " + file);
+        string[] parts = file.Split("/");
+        for (int i = 0; i < parts.Length - 1; i++) {
+          string d = "";
+          for (int j = 0; j <= i; j++) {
+            d = Path.Join(d, parts[j]);
+          }
+          if (!Directory.Exists(Path.Join(savePath, d))) {
+            Directory.CreateDirectory(Path.Join(savePath, d));
+          }
+        }
+        File.Copy(
+            Path.Join(extractPath, file),
+            Path.Join(savePath, file),
+            true
+            );
+      }
+      integrity.InstallFiles(manifest.files, savePath);
+      output.MessageSuc0("successfully installed " + manifest.packageName);
     }
 
     // from local folder

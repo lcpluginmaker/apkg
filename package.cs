@@ -19,7 +19,8 @@ namespace LeoConsole_apkg {
       if (File.Exists(Path.Join(Folder, "manifest.apkg.json"))) {
         loadManifestFromFile();
       } else {
-        loadDefaultManifest();
+        output.MessageErr1("no manifest file found");
+        throw new Exception("no manifest file found");
       }
     }
 
@@ -32,23 +33,11 @@ namespace LeoConsole_apkg {
       }
     }
 
-    private void loadDefaultManifest() {
-      output.MessageWarn1("no manifest file found, using default");
-      PkgManifest = new Manifest();
-      PkgManifest.manifestVersion = 1.0F;
-      PkgManifest.packageName = Path.GetFileName(Folder);
-      PkgManifest.build = new ManifestBuildInstruction();
-      PkgManifest.build.command = "dotnet";
-      PkgManifest.build.args = "build --nologo";
-      PkgManifest.build.folder = ".";
-      PkgManifest.project = new ManifestProjectData();
-    }
-
     public bool Compile() {
       output.MessageSuc0("compiling " + Folder);
       output.MessageSuc1("compiling package '" + PkgManifest.packageName + "' by '" + PkgManifest.project.maintainer + "'...");
       output.MessageSuc1("compiling with '" + PkgManifest.build.command + " " + PkgManifest.build.args + "' in 'project://" + PkgManifest.build.folder + "'...");
-      if (!utils.RunProcess(PkgManifest.build.command, PkgManifest.build.args, Path.Join(Folder, PkgManifest.build.folder))) {
+      if (!utils.RunProcess(PkgManifest.build.command, String.Join("", PkgManifest.build.args), Path.Join(Folder, PkgManifest.build.folder))) {
         return false;
       }
       output.MessageSuc1("compiled " + Folder + " successfully");
