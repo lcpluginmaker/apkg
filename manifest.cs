@@ -14,14 +14,16 @@ namespace LeoConsole_apkg {
     public string bugTracker { get; set; }
   }
 
-  // class to serialize manifest files into
+  // class to serialize repo manifests into
   public class Manifest {
       public float manifestVersion { get; set; }
       public string packageName { get; set; }
+      public string packageVersion { get; set; }
       public ManifestBuildInstruction build { get; set; }
       public ManifestProjectData project { get; set; }
   }
 
+  // class to serialize lcpkg manifests into
   public class PkgArchiveManifest {
     public string packageName { get; set; }
     public string packageVersion { get; set; }

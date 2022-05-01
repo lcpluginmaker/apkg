@@ -158,7 +158,7 @@ allows you to install plugins from unofficial repositories or even local
 folders, which is very handy for quick development and testing.
 
 Available options:
-    get/install:    install plugin from default repo <name>, git repo <https://*.git>, folder <file://*> or url <https://*.dll>
+    get/install:    install plugin from git repo <https://*.git>, folder <compile://*>, url <https://*.lcpkg> or package archive <*.lcpkg>
     help:           print this help
     info:           print where the plugins are downloaded and installed to
     list-available: list plugins available in the default pkg repo

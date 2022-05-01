@@ -9,13 +9,14 @@ Manifest version:
 
 ```json
 {
-    "manifestVersion": 2.0,
+    "manifestVersion": 2.1,
 ```
 
 Your unique package name:
 
 ```json
     "packageName": "apkg",
+    "packageVersion": "1.0.0",
 ```
 
 How to build the package (the dlls array tells which dll files need to be installed):

@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <Reference Include="ILeoConsole">
-      <HintPath>/usr/include/LeoConsole/ILeoConsole.dll</HintPath>
+      <HintPath>/usr/lib/ILeoConsole.dll</HintPath>
     </Reference>
   </ItemGroup>
 

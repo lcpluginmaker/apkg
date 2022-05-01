@@ -6,13 +6,14 @@ using ILeoConsole.Core;
 
 namespace LeoConsole_apkg {
   public class ConsoleData : IData {
-    public User User { get { return _User; } set { _User = value; } }
     public static User _User;
-    public static string _DownloadPath;
+    public User User { get { return _User; } set { _User = value; } }
     public static string _SavePath;
-    public string DownloadPath { get { return _DownloadPath; } set { _DownloadPath = value; } }
     public string SavePath { get { return _SavePath; } set { _SavePath = value; } }
-    public string Version { get { return "?"; } } // this will be removed soon
+    public static string _DownloadPath;
+    public string DownloadPath { get { return _DownloadPath; } set { _DownloadPath = value; } }
+    public static string _Version;
+    public string Version { get { return _Version; } set { _Version = value; } }
   }
   
   public class ApkgPlugin : IPlugin {
@@ -24,12 +25,18 @@ namespace LeoConsole_apkg {
     
     private List<ICommand> _Commands;
     public List<ICommand> Commands { get { return _Commands; } set { _Commands = value; } }
-    
-    public void PluginMain() {
+
+    public void PluginInit(){
       _data = new ConsoleData();
       
       _Commands = new List<ICommand>();
       _Commands.Add(new apkg());
+    }
+    
+    public void PluginMain() {
+    }
+
+    public void PluginShutdown(){
     }
   }
 }

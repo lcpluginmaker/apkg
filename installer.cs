@@ -27,20 +27,23 @@ namespace LeoConsole_apkg {
         output.MessageErr1("cannot create plugin extract dir: " + e.Message);
         return;
       }
-      output.MessageSuc1("extracting package");
+      output.MessageSuc0("extracting package");
       try {
         ZipFile.ExtractToDirectory(archiveFile, extractPath);
       } catch (Exception e) {
         output.MessageErr1("cannot extract plugin: " + e.Message);
         return;
       }
-      output.MessageSuc1("checking package integrity");
+      output.MessageSuc0("checking package integrity");
       string text = File.ReadAllText(Path.Join(extractPath, "PKGINFO.json"));
       PkgArchiveManifest manifest = JsonSerializer.Deserialize<PkgArchiveManifest>(text);
       if (!integrity.CheckPkgConflicts(manifest.files, savePath)) {
         output.MessageErr1("this package conflicts with some installed package");
         return;
       }
+      output.MessageSuc0(
+          $"installing files for {manifest.packageName} from {manifest.project.maintainer}"
+          );
       foreach (string file in manifest.files) {
         output.MessageSuc1("copying " + file);
         string[] parts = file.Split("/");
@@ -59,7 +62,7 @@ namespace LeoConsole_apkg {
             true
             );
       }
-      integrity.InstallFiles(manifest.files, savePath);
+      integrity.InstallFiles(manifest.files, savePath, manifest.packageName);
       output.MessageSuc0("successfully installed " + manifest.packageName);
     }
 

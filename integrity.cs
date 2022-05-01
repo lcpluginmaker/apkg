@@ -20,26 +20,22 @@ namespace LeoConsole_apkg {
       return true;
     }
 
-    public void InstallFiles(string[] files, string savePath) {
-      IList<string> installed = InstalledFiles(savePath);
-      foreach (string newFile in files) {
-        installed.Add(newFile);
-      }
+    public void InstallFiles(string[] files, string savePath, string package) {
       File.WriteAllLines(
-          Path.Join(savePath, "var", "apkg", "files-installed"),
-          installed
+          Path.Join(savePath, "var", "apkg", "files-installed", package),
+          files
           );
     }
 
     public IList<string> InstalledFiles(string savePath) {
-      string databaseFile = Path.Join(savePath, "var", "apkg", "files-installed");
-      if (!File.Exists(databaseFile)) {
-        output.MessageErr1("database file does not exist");
+      string databaseFolder = Path.Join(savePath, "var", "apkg", "files-installed");
+      if (!Directory.Exists(databaseFolder)) {
+        output.MessageErr1("database folder does not exist");
         Console.WriteLine("Create empty database [y/n]? ");
         string answer = Console.ReadLine();
         switch (answer.ToLower()) {
           case "y":
-            File.Create(databaseFile).Dispose();
+            Directory.CreateDirectory(databaseFolder);
             return Enumerable.Empty<string>().ToList();
             break;
           default:
@@ -47,7 +43,13 @@ namespace LeoConsole_apkg {
             break;
         }
       }
-      return File.ReadLines(databaseFile).ToList();
+      IList<string> res = Enumerable.Empty<string>().ToList();
+      foreach (string f in Directory.GetFiles(databaseFolder)) {
+        foreach (string installedFile in File.ReadLines(f)) {
+          res.Add(installedFile);
+        }
+      }
+      return res;
     }
   }
 }

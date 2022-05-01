@@ -1,6 +1,7 @@
 {
   "manifestVersion": 2.0,
   "packageName": "apkg",
+  "packageVersion": "1.0.0",
   "build": {
     "command": "dotnet",
     "args": ["build", "--nologo"],
