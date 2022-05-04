@@ -7,7 +7,6 @@ namespace LeoConsole_apkg {
     private ApkgUtils utils = new ApkgUtils();
     private ApkgIntegrity integrity = new ApkgIntegrity();
 
-    // from package archive
     public void GetLCPKG(string archiveFile, string savePath) {
       if (!archiveFile.EndsWith(".lcpkg")) {
         output.MessageErr1("this does not look like an apkg package archive");
@@ -38,8 +37,9 @@ namespace LeoConsole_apkg {
       string text = File.ReadAllText(Path.Join(extractPath, "PKGINFO.json"));
       PkgArchiveManifest manifest = JsonSerializer.Deserialize<PkgArchiveManifest>(text);
       if (!integrity.CheckPkgConflicts(manifest.files, savePath)) {
-        output.MessageErr1("this package conflicts with some installed package");
-        return;
+        output.MessageWarn1("conflicts with some installed package");
+        //output.MessageErr1("this package conflicts with some installed package");
+        //return;
       }
       output.MessageSuc0(
           $"installing files for {manifest.packageName} from {manifest.project.maintainer}"
@@ -64,61 +64,6 @@ namespace LeoConsole_apkg {
       }
       integrity.InstallFiles(manifest.files, savePath, manifest.packageName);
       output.MessageSuc0("successfully installed " + manifest.packageName);
-    }
-
-    // from local folder
-    public void GetFile(string folder, string savePath) {
-      output.MessageSuc0("installing from local folder...");
-      if (!Directory.Exists(folder)) {
-        output.MessageErr1("" + folder + " does not exist");
-        return;
-      }
-      ApkgPackage package = new ApkgPackage(folder, savePath);
-      if (!package.Compile()) {
-        return;
-      }
-      if (!package.InstallDLLs()) {
-        return;
-      }
-      output.MessageSuc0("" + folder + " was installed. restart LeoConsole to load it");
-    }
-
-    // compiling from git repository
-    public void GetGit(string url, string dlPath, string savePath) {
-      output.MessageSuc0("installing from git repository");
-      string name = Path.GetFileName(url).Split(".")[0];
-      try {
-        if (Directory.Exists(Path.Join(dlPath, "plugins", name))) {
-          output.MessageSuc1("download directory already exists. override [y/n] ? ");
-          string answer = Console.ReadLine();
-          switch (answer.ToLower()) {
-            case "y":
-              if (!utils.DeleteDirectory(Path.Join(dlPath, "plugins", name))) {
-                return;
-              }
-              break;
-            default:
-              output.MessageSuc1("operation aborted");
-              return;
-              break;
-          }
-        }
-      } catch (Exception e) {
-        output.MessageErr1("cannot check download location: " + e.Message);
-        return;
-      }
-      if (!utils.GitClone(url, Path.Join(dlPath, "plugins"), name, dlPath)) {
-        return;
-      }
-      ApkgPackage package = new ApkgPackage(Path.Join(dlPath, "plugins", name), savePath);
-      if (!package.Compile()) {
-        return;
-      }
-      if (!package.InstallDLLs()) {
-        return;
-      }
-      output.MessageSuc0(url + " was installed. restart LeoConsole to load it");
-      return;
     }
   }
 }

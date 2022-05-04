@@ -44,20 +44,7 @@ namespace LeoConsole_apkg {
         output.MessageErr0("you need to provide a package name or location");
         return;
       }
-      if (_InputProperties[2].StartsWith("https://")){
-        string url = _InputProperties[2];
-        if (url.EndsWith(".git")) {
-          installer.GetGit(url, data.DownloadPath, data.SavePath);
-          return;
-        }
-        output.MessageErr0("only downoading git repositories is supported");
-        return;
-      }
-      if (_InputProperties[2].StartsWith("compile://")){
-        string folder = _InputProperties[2].Substring(7, _InputProperties[2].Length-7);
-        installer.GetFile(folder, data.SavePath);
-        return;
-      }
+      // TODO for now installing from local package archives only
       installer.GetLCPKG(_InputProperties[2], data.SavePath);
     }
 
@@ -158,7 +145,7 @@ allows you to install plugins from unofficial repositories or even local
 folders, which is very handy for quick development and testing.
 
 Available options:
-    get/install:    install plugin from git repo <https://*.git>, folder <compile://*>, url <https://*.lcpkg> or package archive <*.lcpkg>
+    get/install:    install plugin from lcpkg file
     help:           print this help
     info:           print where the plugins are downloaded and installed to
     list-available: list plugins available in the default pkg repo
@@ -166,13 +153,6 @@ Available options:
     remove:         remove .dll file
     search:         search for a package in the default repos
     update:         update package database
-
-Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>
-
-LeoConsole-apkg-plugin Copyright (c) 2022 alexcoder04
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it
-under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt> for more details.
 ");
     }
 
@@ -210,7 +190,19 @@ under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt> for mor
       return true;
     }
 
+    private void printCopyright(){
+      Console.WriteLine(@"
+Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>
+
+LeoConsole-apkg-plugin Copyright (c) 2022 alexcoder04
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt> for more details.
+");
+    }
+
     private void firstRun() {
+      printCopyright();
       Console.WriteLine(@"
 You are running apkg for the first time. Please READ CAREFULLY following information:
 
@@ -221,12 +213,11 @@ You are running apkg for the first time. Please READ CAREFULLY following informa
    Modifing these files manually or deleting them will brick your install.
 
 Enjoy apkg!
+(press any key to continue...)
 ");
       Console.ReadKey();
     }
   }
 }
 
-// keep this, this is the most important thing
 // vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-
