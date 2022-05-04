@@ -1,8 +1,16 @@
 
-Unique package name and version:
+# Example PKGINFO file found in the package archive
+
+Manifest (PKGINFO) version:
 
 ```json
 {
+    "manifestVersion": 1.0,
+```
+
+Unique package name and version:
+
+```json
     "packageName": "apkg"
     "packageVersion": "0.4.1",
 ```
@@ -16,7 +24,7 @@ Files:
     ],
 ```
 
-Optional additional information:
+Project information:
 
 ```json
     "project": {
