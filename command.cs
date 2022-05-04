@@ -13,6 +13,7 @@ namespace LeoConsole_apkg {
     private ApkgOutput output = new ApkgOutput();
     private ApkgUtils utils = new ApkgUtils();
     private ApkgInstaller installer = new ApkgInstaller();
+    private ApkgRepository repository = new ApkgRepository();
 
     public void Command() {
       if (_InputProperties.Length < 2) {
@@ -44,8 +45,24 @@ namespace LeoConsole_apkg {
         output.MessageErr0("you need to provide a package name or location");
         return;
       }
-      // TODO for now installing from local package archives only
-      installer.GetLCPKG(_InputProperties[2], data.SavePath);
+      if (_InputProperties[2].EndsWith(".lcpkg")) {
+        output.MessageSuc0("installing local package");
+        installer.GetLCPKG(_InputProperties[2], data.SavePath);
+        return;
+      }
+      repository.Reload(data.SavePath);
+      string url;
+      try {
+        url = repository.GetUrlFor(_InputProperties[2], data.SavePath);
+      } catch (Exception e) {
+        output.MessageErr1("cannot find your package");
+        return;
+      }
+      string dlPath = Path.Join(data.SavePath, "tmp", "package.lcpkg");
+      if (!utils.DownloadFile(url, dlPath)) {
+        return;
+      }
+      installer.GetLCPKG(dlPath, data.SavePath);
     }
 
     private void apkg_do_update() {

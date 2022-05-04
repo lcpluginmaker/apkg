@@ -17,4 +17,5 @@
 | `$SAVEPATH/var/<plugin-name>`        | plugins should save their config files and databases here |
 | `$SAVEPATH/var/apkg`                 | apkg's config files and databases.                        |
 | `$SAVEPATH/var/apkg/config`          | apkg's main config file                                   |
+| `$SAVEPATH/var/apkg/repos`           | activated repositories                                    |
 
