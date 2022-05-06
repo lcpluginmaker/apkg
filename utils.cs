@@ -40,21 +40,6 @@ namespace LeoConsole_apkg {
       return true;
     }
 
-    // create directory to store plugins temporarily
-    public bool CreatePluginsDownloadDir(string dlPath) {
-      if (Directory.Exists(Path.Join(dlPath, "plugins"))) {
-        return true;
-      }
-      try {
-        Directory.CreateDirectory(Path.Join(dlPath, "plugins"));
-      } catch (Exception e) {
-        output.MessageErr1("cannot create plugins download dir: " + e.Message);
-        return false;
-      }
-      output.MessageSuc1("created plugins download directory");
-      return true;
-    }
-
     // download a file to given location
     public bool DownloadFile(string url, string location) {
       output.MessageSuc1("downloading " + url + " to " + location + "...");

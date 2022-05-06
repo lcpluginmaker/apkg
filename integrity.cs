@@ -37,10 +37,8 @@ namespace LeoConsole_apkg {
           case "y":
             Directory.CreateDirectory(databaseFolder);
             return Enumerable.Empty<string>().ToList();
-            break;
           default:
             throw new Exception("database file does not exist");
-            break;
         }
       }
       IList<string> res = Enumerable.Empty<string>().ToList();

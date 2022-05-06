@@ -38,6 +38,7 @@ namespace LeoConsole_apkg {
       PkgArchiveManifest manifest = JsonSerializer.Deserialize<PkgArchiveManifest>(text);
       if (!integrity.CheckPkgConflicts(manifest.files, savePath)) {
         output.MessageWarn1("conflicts with some installed package");
+        // TODO
         //output.MessageErr1("this package conflicts with some installed package");
         //return;
       }
