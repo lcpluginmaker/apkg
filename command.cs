@@ -138,9 +138,7 @@ namespace LeoConsole_apkg {
       Console.WriteLine(@"
 apkg is an advanced package tool for LeoConsole
 
-Besides the default functionality that the standard pkg command provides, it
-allows you to install plugins from unofficial repositories or even local
-folders, which is very handy for quick development and testing.
+For more detailed documentation see '$SAVEPATH/share/docs/apkg'
 
 Available options:
     get/install:    install package
