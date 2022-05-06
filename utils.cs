@@ -40,24 +40,9 @@ namespace LeoConsole_apkg {
       return true;
     }
 
-    // create directory to store plugins temporarily
-    public bool CreatePluginsDownloadDir(string dlPath) {
-      if (Directory.Exists(Path.Join(dlPath, "plugins"))) {
-        return true;
-      }
-      try {
-        Directory.CreateDirectory(Path.Join(dlPath, "plugins"));
-      } catch (Exception e) {
-        output.MessageErr1("cannot create plugins download dir: " + e.Message);
-        return false;
-      }
-      output.MessageSuc1("created plugins download directory");
-      return true;
-    }
-
     // download a file to given location
     public bool DownloadFile(string url, string location) {
-      output.MessageSuc0("downloading " + url + " to " + location + "...");
+      output.MessageSuc1("downloading " + url + " to " + location + "...");
       try {
         WebClient webClient = new WebClient();
         webClient.DownloadFile(url, location);
@@ -65,19 +50,6 @@ namespace LeoConsole_apkg {
         output.MessageErr1("cannot download: " + e.Message);
         return false;
       }
-      return true;
-    }
-
-    // clone a repository to given location
-    public bool GitClone(string url, string parent, string folder, string dlPath) {
-      output.MessageSuc0("cloning " + url + " to " + parent + "/" + folder + "...");
-      if (!CreatePluginsDownloadDir(dlPath)) {
-        return false;
-      }
-      if (!RunProcess("git", "clone " + url + " " + folder, parent)) {
-        return false;
-      }
-      output.MessageSuc1("cloned repo successfully");
       return true;
     }
   }

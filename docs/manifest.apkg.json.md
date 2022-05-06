@@ -1,5 +1,5 @@
 
-# Example manifest file with all possible options
+# Example package manifest file with all possible options
 
 The manifest file tells apkg how to build a package.
 
@@ -9,16 +9,19 @@ Manifest version:
 
 ```json
 {
-    "manifestVersion": 2.0,
+    "manifestVersion": 2.1,
 ```
 
-Your unique package name:
+Your unique package name and version:
 
 ```json
     "packageName": "apkg",
+    "packageVersion": "1.0.0",
 ```
 
-How to build the package (the dlls array tells which dll files need to be installed):
+How to build the package (the `dlls` array tells which dll files need to be
+installed, the `share` string specifies the folder with the files that go into
+`share`):
 
 ```json
     "build": {
@@ -30,7 +33,7 @@ How to build the package (the dlls array tells which dll files need to be instal
     },
 ```
 
-Optional additional information:
+Project information:
 
 ```json
     "project": {
