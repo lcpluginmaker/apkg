@@ -1,10 +1,8 @@
 
 # LeoConsole-apkg
 
-An advanced packaging tool (apt lol) for
-[LeoConsole](https://github.com/BoettcherDasOriginal/LeoConsole). It adds some
-extensions on top of the default package manager that are quite handy for
-developers.
+Advanced packaging tool (apt lol) for [LeoConsole](https://github.com/BoettcherDasOriginal/LeoConsole)
+and its default package manager.
 
 For more info, check out `apkg help`.
 
