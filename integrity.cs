@@ -20,11 +20,19 @@ namespace LeoConsole_apkg {
       return true;
     }
 
-    public void InstallFiles(string[] files, string savePath, string package) {
+    public void InstallFiles(string[] f, string savePath, string p, string pkgVersion) {
       File.WriteAllLines(
-          Path.Join(savePath, "var", "apkg", "files-installed", package),
-          files
+          Path.Join(savePath, "var", "apkg", "files-installed", p), f
           );
+      string[] cont = {pkgVersion};
+      File.WriteAllLines(
+          Path.Join(savePath, "var", "apkg", "package-versions", p), cont
+          );
+    }
+
+    public void RemoveFiles(string package, string savePath) {
+      File.Delete(Path.Join(savePath, "var", "apkg", "files-installed", package));
+      File.Delete(Path.Join(savePath, "var", "apkg", "package-versions", package));
     }
 
     public IList<string> InstalledFiles(string savePath) {

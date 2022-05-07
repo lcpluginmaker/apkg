@@ -40,8 +40,8 @@ Such an `index.json` file looks like this:
             "name": "mediainfo",
             "description": "display audio file metadata",
             "version": "0.4.5",
-            "os": "lin64",
-            "url": "https://my-apkg-server.website.com/mediainfo-lin64-0.4.5.lcpkg"
+            "os": "lnx64",
+            "url": "https://my-apkg-server.website.com/mediainfo-lnx64-0.4.5.lcpkg"
         }
     ]
 }

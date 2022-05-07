@@ -63,7 +63,9 @@ namespace LeoConsole_apkg {
             true
             );
       }
-      integrity.InstallFiles(manifest.files, savePath, manifest.packageName);
+      integrity.InstallFiles(
+          manifest.files, savePath, manifest.packageName, manifest.packageVersion
+          );
       output.MessageSuc0("successfully installed " + manifest.packageName);
     }
   }

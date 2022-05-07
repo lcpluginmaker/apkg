@@ -1,5 +1,6 @@
 using ILeoConsole.Core;
 using System.Text.Json;
+using System.Runtime.InteropServices;
 
 namespace LeoConsole_apkg {
   public class ApkgRepository {
@@ -7,9 +8,19 @@ namespace LeoConsole_apkg {
     private ApkgOutput output = new ApkgOutput();
     private IList<RepoPackage> index;
 
+    public string GetRunningOS() {
+      if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+        return "win64";
+      }
+      if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+        return "lnx64";
+      }
+      return "other";
+    }
+
     public string GetUrlFor(string package, string savePath) {
       foreach (RepoPackage p in index) {
-        if (p.name == package) {
+        if (p.name == package && (p.os == "any" || p.os == GetRunningOS())) {
           return p.url;
         }
       }

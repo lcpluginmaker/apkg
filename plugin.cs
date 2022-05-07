@@ -41,7 +41,8 @@ namespace LeoConsole_apkg {
       string[] folders = {
         Path.Join(data.SavePath, "var"),
         Path.Join(data.SavePath, "var", "apkg"),
-        Path.Join(data.SavePath, "var", "apkg", "files-installed")
+        Path.Join(data.SavePath, "var", "apkg", "files-installed"),
+        Path.Join(data.SavePath, "var", "apkg", "package-versions")
       };
       foreach (string folder in folders) {
         if (!Directory.Exists(folder)) {
