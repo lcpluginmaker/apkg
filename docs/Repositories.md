@@ -3,7 +3,7 @@
 
 Apkg installs packages from so-called repositories. A repository is a collection
 of packages that belong together (same author, same use case, ...). A repository
-is basically a `index.json` file with the metadata and a list of package names
+is basically an `index.json` file with the metadata and a list of package names
 and their according download links. You can activate/deactivate different
 repositories in your apkg config as well as running your own repos.
 
@@ -50,5 +50,8 @@ Such an `index.json` file looks like this:
 ## Notes
 
  - Naming convention for `.lcpkg` files: `pkgname-os-version.lcpkg`
+ - Package/repository names should be all lowercase
  - Package names cannot contain following characters: `-`, `.`
+ - Package version has to be `<int>.<int>.<int>`
+ - Available `os` strings are: `win64`, `lnx64`
 

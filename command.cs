@@ -126,7 +126,7 @@ namespace LeoConsole_apkg {
       output.MessageSuc0("apkg information");
       output.MessageSuc1(
           "cache/download directory:  "
-          + Path.Join(data.DownloadPath, "plugins"));
+          + Path.Join(data.DownloadPath, "apkg"));
       output.MessageSuc1(
           "installation directory:    "
           + Path.Join(data.SavePath, "plugins"));
@@ -134,7 +134,7 @@ namespace LeoConsole_apkg {
           "config/database directory: "
           + Path.Join(data.SavePath, "var", "apkg"));
       output.MessageSuc1(
-          "docs directory: "
+          "docs directory:            "
           + Path.Join(data.SavePath, "share", "docs", "apkg"));
       if (debugMode) {
         output.MessageWarn1("debug mode: ON");
