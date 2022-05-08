@@ -65,18 +65,16 @@ namespace LeoConsole_apkg {
     }
 
     public void InstallLcpkg(string archiveFile, string savePath) {
-      if (!archiveFile.EndsWith(".lcpkg")) {
-        output.MessageErr1("this does not look like an apkg package archive");
-        return;
-      }
       output.MessageSuc1("preparing to extract package");
       string extractPath = Path.Join(savePath, "tmp", "plugin-extract");
+      // delete directory if already exists
       if (Directory.Exists(extractPath)) {
         if (!utils.DeleteDirectory(extractPath)) {
           output.MessageErr1("cannot clean plugin extract directory");
           return;
         }
       }
+      // extract package archive
       try {
         Directory.CreateDirectory(extractPath);
       } catch (Exception e) {
@@ -90,20 +88,40 @@ namespace LeoConsole_apkg {
         output.MessageErr1("cannot extract plugin: " + e.Message);
         return;
       }
+      // integrity
       output.MessageSuc0("checking package integrity");
       string text = File.ReadAllText(Path.Join(extractPath, "PKGINFO.json"));
       PkgArchiveManifest manifest = JsonSerializer.Deserialize<PkgArchiveManifest>(text);
       if (!integrity.CheckPkgConflicts(manifest.files, savePath)) {
-        output.MessageWarn1("conflicts with some installed package");
-        // TODO
-        //output.MessageErr1("this package conflicts with some installed package");
-        //return;
+        if (Directory.Exists(Path.Join(savePath, "var", "apkg", "installed", manifest.packageName))) {
+          string installedVersion = File.ReadAllText(Path.Join(savePath, "var", "apkg", "installed", manifest.packageName, "version")).Trim();
+          if (installedVersion == manifest.packageVersion) {
+            Console.WriteLine("reinstall same package version [y/n]?");
+            string answer = Console.ReadLine();
+            if (answer.ToLower() != "y") {
+              output.MessageErr1("installation aborted");
+              return;
+            }
+          } else if (utils.VersionGreater(installedVersion, manifest.packageVersion)) {
+            Console.WriteLine("downgrade package (" + installedVersion + "->" + manifest.packageVersion + ") [y/n]?");
+            string answer = Console.ReadLine();
+            if (answer.ToLower() != "y") {
+              output.MessageErr1("installation aborted");
+              return;
+            }
+          }
+          RemovePackage(manifest.packageName, savePath);
+        } else {
+          output.MessageErr1("this package conflicts with some installed package");
+          return;
+        }
       }
       output.MessageSuc0(
           $"installing files for {manifest.packageName} from {manifest.project.maintainer}"
           );
       foreach (string file in manifest.files) {
         output.MessageSuc1("copying " + file);
+        // create parent folders
         string[] parts = file.Split("/");
         for (int i = 0; i < parts.Length - 1; i++) {
           string d = "";
@@ -114,6 +132,7 @@ namespace LeoConsole_apkg {
             Directory.CreateDirectory(Path.Join(savePath, d));
           }
         }
+        // copy file
         File.Copy(
             Path.Join(extractPath, file),
             Path.Join(savePath, file),
@@ -124,6 +143,29 @@ namespace LeoConsole_apkg {
           manifest.packageName, manifest.packageVersion, manifest.files, savePath
           );
       output.MessageSuc0("successfully installed " + manifest.packageName);
+    }
+
+    public void RemovePackage(string p, string savePath) {
+      output.MessageSuc0("removing " + p);
+      if (!Directory.Exists(
+            Path.Join(savePath, "var", "apkg", "installed", p)
+            )) {
+        output.MessageErr0("this package is not installed");
+        return;
+      }
+      try {
+        foreach (string f in File.ReadLines(
+              Path.Join(savePath, "var", "apkg", "installed", p, "files")
+              )) {
+          string path = Path.Join(savePath, f);
+          output.MessageSuc1("deleting " + path);
+          File.Delete(path);
+        }
+      } catch (Exception e) {
+        output.MessageErr0("removing package failed");
+        return;
+      }
+      integrity.Unregister(p, savePath);
     }
   }
 }

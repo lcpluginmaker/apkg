@@ -52,6 +52,21 @@ namespace LeoConsole_apkg {
       }
       return true;
     }
+
+    // compare two semantic versions
+    public bool VersionGreater(string v1, string v2) {
+      string[] v1a = v1.Split(".");
+      string[] v2a = v2.Split(".");
+      for (int i = 0; i < 2; i++) {
+        if (int.Parse(v1a[i]) > int.Parse(v2a[i])) {
+          return true;
+        }
+        if (int.Parse(v1a[i]) < int.Parse(v2a[i])) {
+          return false;
+        }
+      }
+      return false;
+    }
   }
 }
 

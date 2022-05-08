@@ -100,26 +100,7 @@ namespace LeoConsole_apkg {
         output.MessageErr0("you need to provide a package name");
         return;
       }
-      string package = _InputProperties[2];
-      if (!Directory.Exists(
-            Path.Join(data.SavePath, "var", "apkg", "installed", package)
-            )) {
-        output.MessageErr0("this package is not installed");
-        return;
-      }
-      try {
-        foreach (string f in File.ReadLines(
-              Path.Join(data.SavePath, "var", "apkg", "installed", package, "files")
-              )) {
-          string path = Path.Join(data.SavePath, f);
-          output.MessageSuc1("deleting " + path);
-          File.Delete(path);
-        }
-      } catch (Exception e) {
-        output.MessageErr0("removing package failed");
-        return;
-      }
-      integrity.Unregister(package, data.SavePath);
+      repository.RemovePackage(_InputProperties[2], data.SavePath);
     }
 
     private void apkg_do_list_available() {
