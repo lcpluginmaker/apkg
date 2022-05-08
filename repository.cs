@@ -1,11 +1,13 @@
 using ILeoConsole.Core;
-using System.Text.Json;
+using System.IO.Compression;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 
 namespace LeoConsole_apkg {
   public class ApkgRepository {
     private ApkgUtils utils = new ApkgUtils();
     private ApkgOutput output = new ApkgOutput();
+    private ApkgIntegrity integrity = new ApkgIntegrity();
     private IList<RepoPackage> index;
 
     public string GetRunningOS() {
@@ -60,6 +62,68 @@ namespace LeoConsole_apkg {
         }
       }
       index = newIndex;
+    }
+
+    public void InstallLcpkg(string archiveFile, string savePath) {
+      if (!archiveFile.EndsWith(".lcpkg")) {
+        output.MessageErr1("this does not look like an apkg package archive");
+        return;
+      }
+      output.MessageSuc1("preparing to extract package");
+      string extractPath = Path.Join(savePath, "tmp", "plugin-extract");
+      if (Directory.Exists(extractPath)) {
+        if (!utils.DeleteDirectory(extractPath)) {
+          output.MessageErr1("cannot clean plugin extract directory");
+          return;
+        }
+      }
+      try {
+        Directory.CreateDirectory(extractPath);
+      } catch (Exception e) {
+        output.MessageErr1("cannot create plugin extract dir: " + e.Message);
+        return;
+      }
+      output.MessageSuc0("extracting package");
+      try {
+        ZipFile.ExtractToDirectory(archiveFile, extractPath);
+      } catch (Exception e) {
+        output.MessageErr1("cannot extract plugin: " + e.Message);
+        return;
+      }
+      output.MessageSuc0("checking package integrity");
+      string text = File.ReadAllText(Path.Join(extractPath, "PKGINFO.json"));
+      PkgArchiveManifest manifest = JsonSerializer.Deserialize<PkgArchiveManifest>(text);
+      if (!integrity.CheckPkgConflicts(manifest.files, savePath)) {
+        output.MessageWarn1("conflicts with some installed package");
+        // TODO
+        //output.MessageErr1("this package conflicts with some installed package");
+        //return;
+      }
+      output.MessageSuc0(
+          $"installing files for {manifest.packageName} from {manifest.project.maintainer}"
+          );
+      foreach (string file in manifest.files) {
+        output.MessageSuc1("copying " + file);
+        string[] parts = file.Split("/");
+        for (int i = 0; i < parts.Length - 1; i++) {
+          string d = "";
+          for (int j = 0; j <= i; j++) {
+            d = Path.Join(d, parts[j]);
+          }
+          if (!Directory.Exists(Path.Join(savePath, d))) {
+            Directory.CreateDirectory(Path.Join(savePath, d));
+          }
+        }
+        File.Copy(
+            Path.Join(extractPath, file),
+            Path.Join(savePath, file),
+            true
+            );
+      }
+      integrity.Register(
+          manifest.packageName, manifest.packageVersion, manifest.files, savePath
+          );
+      output.MessageSuc0("successfully installed " + manifest.packageName);
     }
   }
 }

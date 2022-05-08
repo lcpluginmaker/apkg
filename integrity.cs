@@ -3,6 +3,7 @@ using System.Linq;
 namespace LeoConsole_apkg {
   public class ApkgIntegrity {
     private ApkgOutput output = new ApkgOutput();
+    private ApkgUtils utils = new ApkgUtils();
 
     public bool CheckPkgConflicts(string[] files, string savePath) {
       IList<string> installed;
@@ -20,39 +21,32 @@ namespace LeoConsole_apkg {
       return true;
     }
 
-    public void InstallFiles(string[] f, string savePath, string p, string pkgVersion) {
-      File.WriteAllLines(
-          Path.Join(savePath, "var", "apkg", "files-installed", p), f
+    public void Register(string p, string pVersion, string[] f, string savePath) {
+      output.MessageSuc0("registering package " + p + " v" + pVersion);
+      Directory.CreateDirectory(
+          Path.Join(savePath, "var", "apkg", "installed", p)
           );
-      string[] cont = {pkgVersion};
       File.WriteAllLines(
-          Path.Join(savePath, "var", "apkg", "package-versions", p), cont
+          Path.Join(savePath, "var", "apkg", "installed", p, "files"), f
+          );
+      string[] cont = {pVersion};
+      File.WriteAllLines(
+          Path.Join(savePath, "var", "apkg", "installed", p, "version"), cont
           );
     }
 
-    public void RemoveFiles(string package, string savePath) {
-      File.Delete(Path.Join(savePath, "var", "apkg", "files-installed", package));
-      File.Delete(Path.Join(savePath, "var", "apkg", "package-versions", package));
+    public void Unregister(string p, string savePath) {
+      utils.DeleteDirectory(
+          Path.Join(savePath, "var", "apkg", "installed", p)
+          );
     }
 
     public IList<string> InstalledFiles(string savePath) {
-      string databaseFolder = Path.Join(savePath, "var", "apkg", "files-installed");
-      if (!Directory.Exists(databaseFolder)) {
-        output.MessageErr1("database folder does not exist");
-        Console.WriteLine("Create empty database [y/n]? ");
-        string answer = Console.ReadLine();
-        switch (answer.ToLower()) {
-          case "y":
-            Directory.CreateDirectory(databaseFolder);
-            return Enumerable.Empty<string>().ToList();
-          default:
-            throw new Exception("database file does not exist");
-        }
-      }
+      string databaseFolder = Path.Join(savePath, "var", "apkg", "installed");
       IList<string> res = Enumerable.Empty<string>().ToList();
-      foreach (string f in Directory.GetFiles(databaseFolder)) {
-        foreach (string installedFile in File.ReadLines(f)) {
-          res.Add(installedFile);
+      foreach (string p in Directory.GetDirectories(databaseFolder)) {
+        foreach (string i in File.ReadLines(Path.Join(p, "files"))) {
+          res.Add(i);
         }
       }
       return res;

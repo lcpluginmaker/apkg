@@ -14,7 +14,6 @@ namespace LeoConsole_apkg {
 
     private ApkgOutput output = new ApkgOutput();
     private ApkgUtils utils = new ApkgUtils();
-    private ApkgInstaller installer = new ApkgInstaller();
     private ApkgRepository repository = new ApkgRepository();
     private ApkgIntegrity integrity = new ApkgIntegrity();
 
@@ -45,7 +44,7 @@ namespace LeoConsole_apkg {
             output.MessageErr0("this command is only available in debug mode");
             break;
           }
-          installer.GetLCPKG(_InputProperties[2], data.SavePath);
+          repository.InstallLcpkg(_InputProperties[2], data.SavePath);
           break;
         default:
           output.MessageErr0("apkg: unknown subcommand '" + _InputProperties[1] + "'");
@@ -76,7 +75,7 @@ namespace LeoConsole_apkg {
       if (!utils.DownloadFile(url, dlPath)) {
         return;
       }
-      installer.GetLCPKG(dlPath, data.SavePath);
+      repository.InstallLcpkg(dlPath, data.SavePath);
     }
 
     private void apkg_do_update() {
@@ -86,8 +85,8 @@ namespace LeoConsole_apkg {
     private void apkg_do_list_installed() {
       output.MessageSuc0("your installed packages:");
       try {
-        foreach (string filename in Directory.GetFiles(
-              Path.Join(data.SavePath, "var", "apkg", "files-installed")
+        foreach (string filename in Directory.GetDirectories(
+              Path.Join(data.SavePath, "var", "apkg", "installed")
               )){
           output.MessageSuc1(Path.GetFileName(filename));
         }
@@ -102,15 +101,15 @@ namespace LeoConsole_apkg {
         return;
       }
       string package = _InputProperties[2];
-      if (!File.Exists(
-            Path.Join(data.SavePath, "var", "apkg", "files-installed", package)
+      if (!Directory.Exists(
+            Path.Join(data.SavePath, "var", "apkg", "installed", package)
             )) {
         output.MessageErr0("this package is not installed");
         return;
       }
       try {
         foreach (string f in File.ReadLines(
-              Path.Join(data.SavePath, "var", "apkg", "files-installed", package)
+              Path.Join(data.SavePath, "var", "apkg", "installed", package, "files")
               )) {
           string path = Path.Join(data.SavePath, f);
           output.MessageSuc1("deleting " + path);
@@ -120,7 +119,7 @@ namespace LeoConsole_apkg {
         output.MessageErr0("removing package failed");
         return;
       }
-      integrity.RemoveFiles(package, data.SavePath);
+      integrity.Unregister(package, data.SavePath);
     }
 
     private void apkg_do_list_available() {

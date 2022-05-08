@@ -1,8 +1,8 @@
-﻿using System.IO;
-using System.Reflection;
-using ILeoConsole;
+﻿using ILeoConsole.Core;
 using ILeoConsole.Plugin;
-using ILeoConsole.Core;
+using ILeoConsole;
+using System.IO;
+using System.Reflection;
 
 namespace LeoConsole_apkg {
   public class ConsoleData : IData {
@@ -41,8 +41,7 @@ namespace LeoConsole_apkg {
       string[] folders = {
         Path.Join(data.SavePath, "var"),
         Path.Join(data.SavePath, "var", "apkg"),
-        Path.Join(data.SavePath, "var", "apkg", "files-installed"),
-        Path.Join(data.SavePath, "var", "apkg", "package-versions")
+        Path.Join(data.SavePath, "var", "apkg", "installed"),
       };
       foreach (string folder in folders) {
         if (!Directory.Exists(folder)) {
@@ -58,7 +57,6 @@ namespace LeoConsole_apkg {
       if (!File.Exists(reposListFile)) {
         ApkgRepository repository = new ApkgRepository();
         ApkgUtils utils = new ApkgUtils();
-        ApkgInstaller installer = new ApkgInstaller();
         // enable test repository by default
         string[] lines = {"https://raw.githubusercontent.com/alexcoder04/LeoConsole-apkg-repo-test/main/index.json"};
         using (StreamWriter f = new StreamWriter(reposListFile)) {
@@ -85,7 +83,7 @@ namespace LeoConsole_apkg {
         if (!utils.DownloadFile(url, dlPath)) {
           return;
         }
-        installer.GetLCPKG(dlPath, data.SavePath);
+        repository.InstallLcpkg(dlPath, data.SavePath);
       }
       output.MessageSuc1("self-check successfull");
     }
