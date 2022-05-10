@@ -2,15 +2,12 @@ using System.Linq;
 
 namespace LeoConsole_apkg {
   public class ApkgIntegrity {
-    private ApkgOutput output = new ApkgOutput();
-    private ApkgUtils utils = new ApkgUtils();
-
-    public bool CheckPkgConflicts(string[] files, string savePath) {
+    public static bool CheckPkgConflicts(string[] files, string savePath) {
       IList<string> installed;
       try {
         installed = InstalledFiles(savePath);
       } catch (Exception e) {
-        output.MessageErr1("error loading installed files: " + e.Message);
+        ApkgOutput.MessageErr1("error loading installed files: " + e.Message);
         return false;
       }
       foreach (string file in files) {
@@ -21,8 +18,8 @@ namespace LeoConsole_apkg {
       return true;
     }
 
-    public void Register(string p, string pVersion, string[] f, string savePath) {
-      output.MessageSuc0("registering package " + p + " v" + pVersion);
+    public static void Register(string p, string pVersion, string[] f, string savePath) {
+      ApkgOutput.MessageSuc0("registering package " + p + " v" + pVersion);
       Directory.CreateDirectory(
           Path.Join(savePath, "var", "apkg", "installed", p)
           );
@@ -35,13 +32,13 @@ namespace LeoConsole_apkg {
           );
     }
 
-    public void Unregister(string p, string savePath) {
-      utils.DeleteDirectory(
+    public static void Unregister(string p, string savePath) {
+      ApkgUtils.DeleteDirectory(
           Path.Join(savePath, "var", "apkg", "installed", p)
           );
     }
 
-    public IList<string> InstalledFiles(string savePath) {
+    public static IList<string> InstalledFiles(string savePath) {
       string databaseFolder = Path.Join(savePath, "var", "apkg", "installed");
       IList<string> res = Enumerable.Empty<string>().ToList();
       foreach (string p in Directory.GetDirectories(databaseFolder)) {

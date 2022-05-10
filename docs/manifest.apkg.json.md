@@ -3,8 +3,6 @@
 
 The manifest file tells apkg how to build a package.
 
----
-
 ```json
 {
     "manifestVersion": 2.1,
@@ -25,8 +23,6 @@ The manifest file tells apkg how to build a package.
     }
 }
 ```
-
----
 
 ## Notes
 

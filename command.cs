@@ -12,18 +12,18 @@ namespace LeoConsole_apkg {
       { get { return _InputProperties; } set { _InputProperties = value; } }
     public IData data = new ConsoleData();
 
-    private ApkgOutput output = new ApkgOutput();
-    private ApkgUtils utils = new ApkgUtils();
-    private ApkgRepository repository = new ApkgRepository();
-    private ApkgIntegrity integrity = new ApkgIntegrity();
+    private ApkgRepository repository;
 
     private bool debugMode = false;
 
     public void Command() {
+      if (repository == null) {
+        repository = new ApkgRepository(data.SavePath);
+      }
       readConfig();
 
       if (_InputProperties.Length < 2) {
-        output.MessageErr0("you need to provide a subcommand\n");
+        ApkgOutput.MessageErr0("you need to provide a subcommand\n");
         apkg_do_help();
         return;
       }
@@ -41,13 +41,13 @@ namespace LeoConsole_apkg {
         case "update": apkg_do_update(); break;
         case "get-local":
           if (!debugMode) {
-            output.MessageErr0("this command is only available in debug mode");
+            ApkgOutput.MessageErr0("this command is only available in debug mode");
             break;
           }
-          repository.InstallLcpkg(_InputProperties[2], data.SavePath);
+          repository.InstallLcpkg(_InputProperties[2]);
           break;
         default:
-          output.MessageErr0("apkg: unknown subcommand '" + _InputProperties[1] + "'");
+          ApkgOutput.MessageErr0("apkg: unknown subcommand '" + _InputProperties[1] + "'");
           break;
       }
     }
@@ -55,99 +55,99 @@ namespace LeoConsole_apkg {
     // ------- APKG COMMANDS -------
     private void apkg_do_get() {
       if (_InputProperties.Length < 3){
-        output.MessageErr0("you need to provide a package name");
+        ApkgOutput.MessageErr0("you need to provide a package name");
         return;
       }
       try {
-        repository.Reload(data.SavePath);
+        repository.Reload();
       } catch (Exception e) {
-        output.MessageErr0("error reloading package database");
+        ApkgOutput.MessageErr0("error reloading package database");
         return;
       }
       string url;
       try {
-        url = repository.GetUrlFor(_InputProperties[2], data.SavePath);
+        url = repository.GetUrlFor(_InputProperties[2]);
       } catch (Exception e) {
-        output.MessageErr1("cannot find your package");
+        ApkgOutput.MessageErr1("cannot find your package");
         return;
       }
       string dlPath = Path.Join(data.SavePath, "tmp", "package.lcpkg");
-      if (!utils.DownloadFile(url, dlPath)) {
+      if (!ApkgUtils.DownloadFile(url, dlPath)) {
         return;
       }
-      repository.InstallLcpkg(dlPath, data.SavePath);
+      repository.InstallLcpkg(dlPath);
     }
 
     private void apkg_do_update() {
-      output.MessageErr0("update function is not implemented yet");
+      ApkgOutput.MessageErr0("update function is not implemented yet");
     }
 
     private void apkg_do_list_installed() {
-      output.MessageSuc0("your installed packages:");
+      ApkgOutput.MessageSuc0("your installed packages:");
       try {
         foreach (string filename in Directory.GetDirectories(
               Path.Join(data.SavePath, "var", "apkg", "installed")
               )){
-          output.MessageSuc1(Path.GetFileName(filename));
+          ApkgOutput.MessageSuc1(Path.GetFileName(filename));
         }
       } catch (Exception e) {
-        output.MessageErr1(e.Message);
+        ApkgOutput.MessageErr1(e.Message);
       }
     }
 
     private void apkg_do_remove() {
       if (_InputProperties.Length < 3){
-        output.MessageErr0("you need to provide a package name");
+        ApkgOutput.MessageErr0("you need to provide a package name");
         return;
       }
-      repository.RemovePackage(_InputProperties[2], data.SavePath);
+      repository.RemovePackage(_InputProperties[2]);
     }
 
     private void apkg_do_list_available() {
-      IList<string> list = repository.AvailablePlugins(data.SavePath);
-      output.MessageSuc0("available packages:");
+      IList<string> list = repository.AvailablePlugins();
+      ApkgOutput.MessageSuc0("available packages:");
       foreach (string p in list) {
-        output.MessageSuc1(p);
+        ApkgOutput.MessageSuc1(p);
       }
     }
     
     private void apkg_do_search() {
       string keyword = _InputProperties[2];
-      IList<string> list = repository.AvailablePlugins(data.SavePath);
-      output.MessageSuc0("results:");
+      IList<string> list = repository.AvailablePlugins();
+      ApkgOutput.MessageSuc0("results:");
       foreach (string p in list) {
         if (p.ToLower().Contains(keyword.ToLower())) {
-          output.MessageSuc1(p);
+          ApkgOutput.MessageSuc1(p);
         }
       }
     }
 
     private void apkg_do_info() {
-      output.MessageSuc0("apkg information");
-      output.MessageSuc1(
+      ApkgOutput.MessageSuc0("apkg information");
+      ApkgOutput.MessageSuc1(
           "cache/download directory:  "
           + Path.Join(data.DownloadPath, "apkg"));
-      output.MessageSuc1(
+      ApkgOutput.MessageSuc1(
           "installation directory:    "
           + Path.Join(data.SavePath, "plugins"));
-      output.MessageSuc1(
+      ApkgOutput.MessageSuc1(
           "config/database directory: "
           + Path.Join(data.SavePath, "var", "apkg"));
-      output.MessageSuc1(
+      ApkgOutput.MessageSuc1(
           "docs directory:            "
           + Path.Join(data.SavePath, "share", "docs", "apkg"));
       if (debugMode) {
-        output.MessageWarn1("debug mode: ON");
+        ApkgOutput.MessageWarn1("debug mode: ON");
       } else {
-        output.MessageSuc1("debug mode: off");
+        ApkgOutput.MessageSuc1("debug mode: off");
       }
     }
 
     private void apkg_do_reload() {
       try {
-        repository.Reload(data.SavePath);
+        repository.Reload();
       } catch (Exception e) {
-        output.MessageErr0("error realoding package database");
+        ApkgOutput.MessageErr0("error realoding package database");
         return;
       }
     }
