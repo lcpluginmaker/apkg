@@ -38,6 +38,11 @@ unstable):
 4. Enable debug mode in apkg (add `debugModeOn` to your `$SAVEPATH/var/apkg/config`)
 4. in LeoConsole, type `apkg get-local <apkg-repo>/apkg.lcpkg`
 
+## Documentation
+
+Documentation can be found at
+[alexcoder04.github.io/LeoConsole-apkg](https://alexcoder04.github.io/LeoConsole-apkg).
+
 ## Naming
 
 The name consists of multiple ideas merged together:
