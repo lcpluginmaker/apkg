@@ -15,11 +15,15 @@ namespace LeoConsole_apkg {
     private ApkgRepository repository;
 
     private bool debugMode = false;
+    private const string apkgVersion="1.0.0";
+    private string configFolder;
+
+    public LeoConsoleApkgCommand(string savePath) {
+      repository = new ApkgRepository(savePath);
+      configFolder = Path.Join(savePath, "var", "apkg");
+    }
 
     public void Command() {
-      if (repository == null) {
-        repository = new ApkgRepository(data.SavePath);
-      }
       readConfig();
 
       if (_InputProperties.Length < 2) {
@@ -71,7 +75,7 @@ namespace LeoConsole_apkg {
         ApkgOutput.MessageErr1("cannot find your package");
         return;
       }
-      string dlPath = Path.Join(data.SavePath, "tmp", "package.lcpkg");
+      string dlPath = Path.Join(data.DownloadPath, "apkg", "package.lcpkg");
       if (!ApkgUtils.DownloadFile(url, dlPath)) {
         return;
       }
@@ -86,7 +90,7 @@ namespace LeoConsole_apkg {
       ApkgOutput.MessageSuc0("your installed packages:");
       try {
         foreach (string filename in Directory.GetDirectories(
-              Path.Join(data.SavePath, "var", "apkg", "installed")
+              Path.Join(configFolder, "installed")
               )){
           ApkgOutput.MessageSuc1(Path.GetFileName(filename));
         }
@@ -132,10 +136,11 @@ namespace LeoConsole_apkg {
           + Path.Join(data.SavePath, "plugins"));
       ApkgOutput.MessageSuc1(
           "config/database directory: "
-          + Path.Join(data.SavePath, "var", "apkg"));
+          + Path.Join(configFolder));
       ApkgOutput.MessageSuc1(
           "docs directory:            "
           + Path.Join(data.SavePath, "share", "docs", "apkg"));
+      ApkgOutput.MessageSuc1("apkg version: " + apkgVersion);
       if (debugMode) {
         ApkgOutput.MessageWarn1("debug mode: ON");
       } else {
@@ -180,7 +185,7 @@ Available options in debug mode:
     // HELPER FUNCTIONS
     private void readConfig() {
       // create config
-      string configFile = Path.Join(data.SavePath, "var", "apkg", "config");
+      string configFile = Path.Join(configFolder, "config");
       if (!File.Exists(configFile)) {
         firstRun();
         string[] lines = {"notFirstRun"};

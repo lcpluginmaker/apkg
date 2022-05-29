@@ -7,9 +7,11 @@ namespace LeoConsole_apkg {
   public class ApkgRepository {
     private IList<RepoPackage> index;
     private string savePath;
+    private string configDir;
 
     public ApkgRepository(string sp) {
       savePath = sp;
+      configDir = Path.Join(savePath, "var", "apkg");
     }
 
     public string GetRunningOS() {
@@ -35,14 +37,13 @@ namespace LeoConsole_apkg {
     }
 
     public IList<string> AvailablePlugins() {
-      if (index.Count() < 1) {
-        Reload();
-      }
       IList<string> pluginsList = Enumerable.Empty<string>().ToList();
-      try {
-        Reload();
-      } catch (Exception e) {
-        return pluginsList;
+      if (index.Count() < 1) {
+        try {
+          Reload();
+        } catch (Exception e) {
+          return pluginsList;
+        }
       }
       foreach (RepoPackage p in index) {
         pluginsList.Add(p.name);
@@ -51,7 +52,7 @@ namespace LeoConsole_apkg {
     }
 
     public void Reload() {
-      string reposListFile = Path.Join(savePath, "var", "apkg", "repos");
+      string reposListFile = Path.Join(configDir, "repos");
       ApkgOutput.MessageSuc0("reloading package index");
       IList<RepoPackage> newIndex = Enumerable.Empty<RepoPackage>().ToList();
       if (!File.Exists(reposListFile)) {
@@ -73,6 +74,7 @@ namespace LeoConsole_apkg {
     }
 
     public void InstallLcpkg(string archiveFile) {
+      ApkgOutput.MessageSuc0("installing package");
       ApkgOutput.MessageSuc1("preparing to extract package");
       string extractPath = Path.Join(savePath, "tmp", "plugin-extract");
       // delete directory if already exists
@@ -101,8 +103,8 @@ namespace LeoConsole_apkg {
       string text = File.ReadAllText(Path.Join(extractPath, "PKGINFO.json"));
       PkgArchiveManifest manifest = JsonSerializer.Deserialize<PkgArchiveManifest>(text);
       if (!ApkgIntegrity.CheckPkgConflicts(manifest.files, savePath)) {
-        if (Directory.Exists(Path.Join(savePath, "var", "apkg", "installed", manifest.packageName))) {
-          string installedVersion = File.ReadAllText(Path.Join(savePath, "var", "apkg", "installed", manifest.packageName, "version")).Trim();
+        if (Directory.Exists(Path.Join(configDir, "installed", manifest.packageName))) {
+          string installedVersion = File.ReadAllText(Path.Join(configDir, "installed", manifest.packageName, "version")).Trim();
           if (installedVersion == manifest.packageVersion) {
             Console.WriteLine("reinstall same package version [y/n]?");
             string answer = Console.ReadLine();
@@ -156,14 +158,14 @@ namespace LeoConsole_apkg {
     public void RemovePackage(string p) {
       ApkgOutput.MessageSuc0("removing " + p);
       if (!Directory.Exists(
-            Path.Join(savePath, "var", "apkg", "installed", p)
+            Path.Join(configDir, "installed", p)
             )) {
         ApkgOutput.MessageErr0("this package is not installed");
         return;
       }
       try {
         foreach (string f in File.ReadLines(
-              Path.Join(savePath, "var", "apkg", "installed", p, "files")
+              Path.Join(configDir, "installed", p, "files")
               )) {
           string path = Path.Join(savePath, f);
           ApkgOutput.MessageSuc1("deleting " + path);

@@ -30,9 +30,11 @@ namespace LeoConsole_apkg {
 
     public void PluginInit(){
       _data = new ConsoleData();
-      
       _Commands = new List<ICommand>();
-      _Commands.Add(new LeoConsoleApkgCommand());
+    }
+
+    public void RegisterCommands(){
+      _Commands.Add(new LeoConsoleApkgCommand(data.SavePath));
     }
     
     public void PluginMain() {
@@ -41,6 +43,7 @@ namespace LeoConsole_apkg {
         Path.Join(data.SavePath, "var"),
         Path.Join(data.SavePath, "var", "apkg"),
         Path.Join(data.SavePath, "var", "apkg", "installed"),
+        Path.Join(data.DownloadPath, "apkg"),
       };
       foreach (string folder in folders) {
         if (!Directory.Exists(folder)) {
