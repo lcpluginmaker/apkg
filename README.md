@@ -2,7 +2,7 @@
 # LeoConsole-apkg
 
 [![Release](https://img.shields.io/github/v/release/alexcoder04/LeoConsole-apkg)](https://github.com/alexcoder04/LeoConsole-apkg/releases/latest)
-[![Top language](https://img.shields.io/github/languages/top/alexcoder04/LeoConsole-apkg)](https://github.com/alexcoder04/LeoConsole-apkg/search?l=go)
+[![Top language](https://img.shields.io/github/languages/top/alexcoder04/LeoConsole-apkg)](https://github.com/alexcoder04/LeoConsole-apkg/search?l=C%23)
 [![License](https://img.shields.io/github/license/alexcoder04/LeoConsole-apkg)](https://github.com/alexcoder04/LeoConsole-apkg/blob/main/LICENSE)
 [![Issues](https://img.shields.io/github/issues/alexcoder04/LeoConsole-apkg)](https://github.com/alexcoder04/LeoConsole-apkg/issues)
 [![Pull requests](https://img.shields.io/github/issues-pr/alexcoder04/LeoConsole-apkg)](https://github.com/alexcoder04/LeoConsole-apkg/pulls)
