@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace LeoConsole_apkg {
@@ -17,6 +18,18 @@ namespace LeoConsole_apkg {
       ApkgOutput.MessageSuc1("" + folder + " deleted");
       return true;
     }
+
+    // get running os
+    public static string GetRunningOS() {
+      if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+        return "win64";
+      }
+      if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+        return "lnx64";
+      }
+      return "other";
+    }
+
 
     // run a process with parameters and wait for it to finish
     public static bool RunProcess(string name, string args, string pwd) {

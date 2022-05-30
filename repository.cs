@@ -1,6 +1,5 @@
 using ILeoConsole.Core;
 using System.IO.Compression;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace LeoConsole_apkg {
@@ -14,22 +13,12 @@ namespace LeoConsole_apkg {
       configDir = Path.Join(savePath, "var", "apkg");
     }
 
-    public string GetRunningOS() {
-      if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-        return "win64";
-      }
-      if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
-        return "lnx64";
-      }
-      return "other";
-    }
-
     public string GetUrlFor(string package) {
       if (index.Count() < 1) {
         Reload();
       }
       foreach (RepoPackage p in index) {
-        if (p.name == package && (p.os == "any" || p.os == GetRunningOS())) {
+        if (p.name == package && (p.os == "any" || p.os == ApkgUtils.GetRunningOS())) {
           return p.url;
         }
       }
@@ -148,6 +137,11 @@ namespace LeoConsole_apkg {
             Path.Join(savePath, file),
             true
             );
+        if (file.StartsWith("share/scripts") && ApkgUtils.GetRunningOS() == "lnx64") {
+          if (!ApkgUtils.RunProcess("chmod", "+x " + Path.Join(savePath, file), savePath)) {
+            ApkgOutput.MessageWarn1("cannot mark " + file + " as executable");
+          }
+        }
       }
       ApkgIntegrity.Register(
           manifest.packageName, manifest.packageVersion, manifest.files, savePath
