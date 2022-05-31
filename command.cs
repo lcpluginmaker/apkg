@@ -13,19 +13,18 @@ namespace LeoConsole_apkg {
     public IData data = new ConsoleData();
 
     private ApkgRepository repository;
+    private ApkgConfig config;
 
-    private bool debugMode = false;
     private const string apkgVersion="1.0.0";
     private string configFolder;
 
     public LeoConsoleApkgCommand(string savePath) {
       repository = new ApkgRepository(savePath);
       configFolder = Path.Join(savePath, "var", "apkg");
+      config = ApkgConfigHelper.ReadConfig(configFolder);
     }
 
     public void Command() {
-      readConfig();
-
       if (_InputProperties.Length < 2) {
         ApkgOutput.MessageErr0("you need to provide a subcommand\n");
         apkg_do_help();
@@ -44,7 +43,7 @@ namespace LeoConsole_apkg {
         case "search": apkg_do_search(); break;
         case "update": apkg_do_update(); break;
         case "get-local":
-          if (!debugMode) {
+          if (!config.DebugMode) {
             ApkgOutput.MessageErr0("this command is only available in debug mode");
             break;
           }
@@ -141,7 +140,7 @@ namespace LeoConsole_apkg {
           "docs directory:            "
           + Path.Join(data.SavePath, "share", "docs", "apkg"));
       ApkgOutput.MessageSuc1("apkg version: " + apkgVersion);
-      if (debugMode) {
+      if (config.DebugMode) {
         ApkgOutput.MessageWarn1("debug mode: ON");
       } else {
         ApkgOutput.MessageSuc1("debug mode: off");
@@ -174,64 +173,12 @@ Available options:
     reload:         reload package database
     update:         update packages
 ");
-      if (debugMode) {
+      if (config.DebugMode) {
         Console.WriteLine(@"
 Available options in debug mode:
     get-local:     install local .lcpkg file
 ");
       }
-    }
-
-    // HELPER FUNCTIONS
-    private void readConfig() {
-      // create config
-      string configFile = Path.Join(configFolder, "config");
-      if (!File.Exists(configFile)) {
-        firstRun();
-        string[] lines = {"notFirstRun"};
-        using (StreamWriter outputFile = new StreamWriter(configFile)) {
-          foreach (string line in lines) {
-            outputFile.WriteLine(line);
-          }
-        }
-      }
-      // read config
-      IEnumerable<string> config = File.ReadLines(configFile);
-      if (!config.Contains("notFirstRun")) {
-        firstRun();
-      }
-      if (config.Contains("debugModeOn")) {
-        debugMode = true;
-      }
-    }
-
-    private void printCopyright(){
-      Console.WriteLine(@"
-Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>
-
-LeoConsole-apkg-plugin Copyright (c) 2022 alexcoder04
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it
-under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt>
-for more details.
-");
-    }
-
-    private void firstRun() {
-      printCopyright();
-      Console.WriteLine(@"
-You are running apkg for the first time. Please READ CAREFULLY following information:
-
- - apkg installs plugin files into $SAVEPATH/plugins and $SAVEPATH/share. These
-   files are then managed by apkg. Manually changing or deleting them may cause
-   irrecoverable errors.
- - apkg keeps track of installed plugins and other information in $SAVEPATH/var/apkg
-   Modifing these files manually or deleting them will brick your install.
-
-Enjoy apkg!
-(press any key to continue...)
-");
-      Console.ReadKey();
     }
   }
 }

@@ -78,6 +78,36 @@ namespace LeoConsole_apkg {
       }
       return false;
     }
+
+    public static void PrintCopyright(){
+      Console.WriteLine(@"
+Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>
+
+LeoConsole-apkg-plugin Copyright (c) 2022 alexcoder04
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt>
+for more details.
+");
+    }
+
+    public static void FirstRun() {
+      PrintCopyright();
+      Console.WriteLine(@"
+You are running apkg for the first time. Please READ CAREFULLY following information:
+
+ - apkg installs plugin files into $SAVEPATH/plugins and $SAVEPATH/share. These
+   files are then managed by apkg. Manually changing or deleting them may cause
+   irrecoverable errors.
+ - apkg keeps track of installed plugins and other information in $SAVEPATH/var/apkg
+   Modifing these files manually or deleting them will brick your install.
+
+Enjoy apkg!
+(press any key to continue...)
+");
+      Console.ReadKey();
+    }
+
   }
 }
 
