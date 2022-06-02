@@ -3,9 +3,10 @@
 
 ```json
 {
-    "manifestVersion": 1.0,
+    "manifestVersion": 1.1,
     "packageName": "apkg"
     "packageVersion": "0.4.1",
+    "packageOS": "win64",
     "files": [
         "plugins/apkg.dll",
         "share/docs/apkg/Packaging.md"
