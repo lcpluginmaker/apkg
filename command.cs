@@ -42,10 +42,19 @@ namespace LeoConsole_apkg {
         case "remove": apkg_do_remove(); break;
         case "search": apkg_do_search(); break;
         case "update": apkg_do_update(); break;
+        case "build":
+          if (!config.DebugMode) {
+            ApkgOutput.MessageErr0("this command is only available in debug mode"); break;
+          }
+          ApkgUtils.RunProcess(
+              ApkgUtils.GetBuilderPath(data.SavePath),
+              _InputProperties[2],
+              data.CurrentWorkingPath
+              );
+          break;
         case "get-local":
           if (!config.DebugMode) {
-            ApkgOutput.MessageErr0("this command is only available in debug mode");
-            break;
+            ApkgOutput.MessageErr0("this command is only available in debug mode"); break;
           }
           repository.InstallLcpkg(_InputProperties[2]);
           break;
@@ -176,6 +185,7 @@ Available options:
       if (config.DebugMode) {
         Console.WriteLine(@"
 Available options in debug mode:
+    build:         build plugin in directory
     get-local:     install local .lcpkg file
 ");
       }

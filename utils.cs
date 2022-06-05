@@ -30,6 +30,24 @@ namespace LeoConsole_apkg {
       return "other";
     }
 
+    // get path of the apkg-builder binary
+    public static string GetBuilderPath(string savePath) {
+      if (GetRunningOS() == "lnx64") {
+        string path = Path.Join(savePath, "share", "scripts", "apkg-build-lnx64");
+        if (File.Exists(path)) {
+          return path;
+        }
+        throw new Exception("builder binary not found");
+      }
+      if (GetRunningOS() == "win64") {
+        string path = Path.Join(savePath, "share", "scripts", "apkg-build-win64.exe");
+        if (File.Exists(path)) {
+          return path;
+        }
+        throw new Exception("builder binary not found");
+      }
+      throw new Exception("unknown OS");
+    }
 
     // run a process with parameters and wait for it to finish
     public static bool RunProcess(string name, string args, string pwd) {
