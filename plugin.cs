@@ -20,7 +20,7 @@ namespace LeoConsole_apkg {
   
   public class ApkgPlugin : IPlugin {
     public string Name { get { return "apkg"; } }
-    public string Explanation { get { return "advanced package tool (apt lol)"; } }
+    public string Explanation { get { return "advanced package manager"; } }
     
     private IData _data;
     public IData data { get { return _data; } set { _data = value; } }
@@ -39,6 +39,7 @@ namespace LeoConsole_apkg {
     
     public void PluginMain() {
       ApkgOutput.MessageSuc0("performing apkg self-check");
+      // check if folders exist
       string[] folders = {
         Path.Join(data.SavePath, "var"),
         Path.Join(data.SavePath, "var", "apkg"),
@@ -56,16 +57,19 @@ namespace LeoConsole_apkg {
           }
         }
       }
+      // check if repositories are configured
       string reposListFile = Path.Join(data.SavePath, "var", "apkg", "repos");
       if (!File.Exists(reposListFile)) {
+        ApkgOutput.MessageSuc0("repos list not found, enabling main repository");
         ApkgRepository repository = new ApkgRepository(data.SavePath);
-        // enable test repository by default
-        string[] lines = {"https://raw.githubusercontent.com/alexcoder04/LeoConsole-apkg-repo-test/main/index.json"};
+        // enable main repository by default
+        string[] lines = {"https://raw.githubusercontent.com/alexcoder04/LeoConsole-apkg-repo-main/main/index.json"};
         using (StreamWriter f = new StreamWriter(reposListFile)) {
           foreach (string line in lines) {
             f.WriteLine(line);
           }
         }
+        // reload
         try {
           repository.Reload();
         } catch (Exception e) {
@@ -73,6 +77,7 @@ namespace LeoConsole_apkg {
           ApkgOutput.MessageErr0("something seems to be broken, you can not use apkg");
           return;
         }
+        // re-install itself
         string url;
         try {
           url = repository.GetUrlFor("apkg");

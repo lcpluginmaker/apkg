@@ -5,7 +5,7 @@ using ILeoConsole;
 namespace LeoConsole_apkg {
   public class LeoConsoleApkgCommand : ICommand {
     public string Name { get { return "apkg"; } }
-    public string Description { get { return "advanced package management"; } }
+    public string Description { get { return "advanced package manager"; } }
     public Action CommandFunktion { get { return () => Command(); } }
     private string[] _InputProperties;
     public string[] InputProperties
