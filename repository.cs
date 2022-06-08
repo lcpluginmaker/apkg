@@ -7,10 +7,19 @@ namespace LeoConsole_apkg {
     private IList<RepoPackage> index;
     private string savePath;
     private string configDir;
+    private string reposFolder;
 
     public ApkgRepository(string sp) {
       savePath = sp;
       configDir = Path.Join(savePath, "var", "apkg");
+      reposFolder = Path.Join(configDir, "repos-index");
+      foreach (string r in Directory.GetFiles(reposFolder)) {
+        string text = System.IO.File.ReadAllText(r);
+        RepoIndex thisRepoIndex = JsonSerializer.Deserialize<RepoIndex>(text);
+        foreach (RepoPackage p in thisRepoIndex.packageList) {
+          index.Add(p);
+        }
+      }
     }
 
     public string GetUrlFor(string package) {
@@ -55,6 +64,11 @@ namespace LeoConsole_apkg {
         }
         string text = System.IO.File.ReadAllText(Path.Join(savePath, "tmp", "repo.json"));
         RepoIndex thisRepoIndex = JsonSerializer.Deserialize<RepoIndex>(text);
+        File.Copy(
+            Path.Join(savePath, "tmp", "repo.json"),
+            Path.Join(reposFolder, thisRepoIndex.name + ".json"),
+            true
+            );
         foreach (RepoPackage p in thisRepoIndex.packageList) {
           newIndex.Add(p);
         }

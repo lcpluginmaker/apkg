@@ -5,7 +5,7 @@ version="$(grep '"packageVersion":' manifest.apkg.json | cut -d: -f2 | tr -d '",
 sed -Ei "s/apkgVersion\\s?=\\s?\".*\"/apkgVersion=\"$version\"/" "./command.cs"
 
 # build plugin
-dotnet build --nologo || exit 1
+dotnet build --nologo --verbosity quiet || exit 1
 
 # get builder
 BUILDER_REPO="https://github.com/alexcoder04/LeoConsole-apkg-builder"
@@ -16,7 +16,7 @@ case "$APKG_BUILDER_OS" in
 esac
 
 mkdir -vp "./share/scripts"
-wget -O "./share/scripts/$builder_file" "$BUILDER_REPO/releases/latest/download/$builder_file" || exit 1
+wget -nv -O "./share/scripts/$builder_file" "$BUILDER_REPO/releases/latest/download/$builder_file" || exit 1
 
 # copy docs
 mkdir -vp "./share/docs/apkg"

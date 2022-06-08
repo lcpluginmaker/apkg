@@ -44,7 +44,15 @@ namespace LeoConsole_apkg {
         case "update": apkg_do_update(); break;
         case "build":
           if (!config.DebugMode) {
-            ApkgOutput.MessageErr0("this command is only available in debug mode"); break;
+            ApkgOutput.MessageErr0("this command is only available in debug mode"); return;
+          }
+          if (_InputProperties.Length < 3) {
+            ApkgOutput.MessageErr0("pass a folder to build");
+            return;
+          }
+          if (Directory.Exists(_InputProperties[2])) {
+            ApkgOutput.MessageErr0("the folder you passed doesn't exists");
+            return;
           }
           ApkgUtils.RunProcess(
               ApkgUtils.GetBuilderPath(data.SavePath),
@@ -54,7 +62,30 @@ namespace LeoConsole_apkg {
           break;
         case "get-local":
           if (!config.DebugMode) {
-            ApkgOutput.MessageErr0("this command is only available in debug mode"); break;
+            ApkgOutput.MessageErr0("this command is only available in debug mode"); return;
+          }
+          if (_InputProperties.Length < 3) {
+            ApkgOutput.MessageErr0("pass a file or folder to install");
+            return;
+          }
+          if (Directory.Exists(_InputProperties[2])) {
+            ApkgUtils.RunProcess(
+                ApkgUtils.GetBuilderPath(data.SavePath),
+                _InputProperties[2],
+                data.CurrentWorkingPath
+                );
+            foreach (string f in Directory.GetFiles(_InputProperties[2])) {
+              if (f.EndsWith(".lcpkg")) {
+                ApkgOutput.MessageSuc0("installing built archive: " + f);
+                repository.InstallLcpkg(f);
+                return;
+              }
+            }
+            return;
+          }
+          if (!_InputProperties[2].EndsWith(".lcpkg")) {
+            ApkgOutput.MessageErr0("looks not like an lcpkg file");
+            return;
           }
           repository.InstallLcpkg(_InputProperties[2]);
           break;

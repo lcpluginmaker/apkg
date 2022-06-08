@@ -43,6 +43,7 @@ namespace LeoConsole_apkg {
         Path.Join(data.SavePath, "var"),
         Path.Join(data.SavePath, "var", "apkg"),
         Path.Join(data.SavePath, "var", "apkg", "installed"),
+        Path.Join(data.SavePath, "var", "apkg", "repos-index"),
         Path.Join(data.DownloadPath, "apkg"),
       };
       foreach (string folder in folders) {

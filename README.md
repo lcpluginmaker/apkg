@@ -45,11 +45,7 @@ Documentation can be found at
 
 ## Naming
 
-The name consists of multiple ideas merged together:
+LeoConsole `pkg` + Debian `apt` + Alpine `apk` = `apkg` xD
 
- - LeoConsole's old `pkg`
- - Debian's `apt`
- - Alpine's `apk`
-
-In total it makes `apkg` xD. Have fun with it!
+Have fun with it!
 
