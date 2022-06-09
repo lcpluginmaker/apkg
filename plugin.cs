@@ -86,7 +86,7 @@ namespace LeoConsole_apkg {
           ApkgOutput.MessageErr0("something seems to be broken, you can not use apkg");
           return;
         }
-        string dlPath = Path.Join(data.SavePath, "tmp", "package.lcpkg");
+        string dlPath = Path.Join(data.SavePath, "tmp", "apkg.lcp");
         if (!ApkgUtils.DownloadFile(url, dlPath)) {
           return;
         }
@@ -95,8 +95,7 @@ namespace LeoConsole_apkg {
       ApkgOutput.MessageSuc1("self-check successfull");
     }
 
-    public void PluginShutdown(){
-    }
+    public void PluginShutdown() { }
   }
 }
 

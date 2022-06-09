@@ -80,7 +80,7 @@ namespace LeoConsole_apkg {
     public void InstallLcpkg(string archiveFile) {
       ApkgOutput.MessageSuc0("installing package");
       ApkgOutput.MessageSuc1("preparing to extract package");
-      string extractPath = Path.Join(savePath, "tmp", "apkg", Path.GetFileName(archiveFile).Replace(".lcpkg", ""));
+      string extractPath = Path.Join(savePath, "tmp", "apkg", Path.GetFileName(archiveFile).Replace(".lcp", ""));
       // delete directory if already exists
       if (Directory.Exists(extractPath)) {
         if (!ApkgUtils.DeleteDirectory(extractPath)) {

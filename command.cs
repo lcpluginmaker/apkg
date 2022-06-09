@@ -78,7 +78,7 @@ namespace LeoConsole_apkg {
               return;
             }
             foreach (string f in Directory.GetFiles(_InputProperties[2])) {
-              if (f.EndsWith(".lcpkg")) {
+              if (f.EndsWith(".lcp")) {
                 ApkgOutput.MessageSuc0("installing built archive: " + f);
                 repository.InstallLcpkg(f);
                 return;
@@ -86,8 +86,8 @@ namespace LeoConsole_apkg {
             }
             return;
           }
-          if (!_InputProperties[2].EndsWith(".lcpkg")) {
-            ApkgOutput.MessageErr0("looks not like an lcpkg file");
+          if (!_InputProperties[2].EndsWith(".lcp")) {
+            ApkgOutput.MessageErr0("looks not like an lcp file");
             return;
           }
           repository.InstallLcpkg(_InputProperties[2]);
@@ -117,7 +117,7 @@ namespace LeoConsole_apkg {
         ApkgOutput.MessageErr1("cannot find your package");
         return;
       }
-      string dlPath = Path.Join(data.DownloadPath, "apkg", $"{_InputProperties[2]}.lcpkg");
+      string dlPath = Path.Join(data.DownloadPath, "apkg", $"{_InputProperties[2]}.lcp");
       if (!ApkgUtils.DownloadFile(url, dlPath)) {
         return;
       }

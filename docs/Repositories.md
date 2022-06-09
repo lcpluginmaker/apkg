@@ -27,21 +27,21 @@ Such an `index.json` file looks like this:
             "description": "play audio files",
             "version": "1.0.1",
             "os": "any",
-            "url": "https://leoconsole-repo.example.com/lc_player-any-1.0.1.lcpkg"
+            "url": "https://leoconsole-repo.example.com/lc_player-any-1.0.1.lcp"
         },
         {
             "name": "mediainfo",
             "description": "display audio file metadata",
             "version": "0.4.5",
             "os": "win64",
-            "url": "https://my-apkg-server.website.com/mediainfo-win64-0.4.5.lcpkg"
+            "url": "https://my-apkg-server.website.com/mediainfo-win64-0.4.5.lcp"
         },
         {
             "name": "mediainfo",
             "description": "display audio file metadata",
             "version": "0.4.5",
             "os": "lnx64",
-            "url": "https://my-apkg-server.website.com/mediainfo-lnx64-0.4.5.lcpkg"
+            "url": "https://my-apkg-server.website.com/mediainfo-lnx64-0.4.5.lcp"
         }
     ]
 }
@@ -49,7 +49,7 @@ Such an `index.json` file looks like this:
 
 ## Notes
 
- - Naming convention for `.lcpkg` files: `pkgname-os-version.lcpkg`
+ - Naming convention for `.lcpkg` files: `pkgname-os-version.lcp`
  - Package/repository names should be all lowercase
  - Package names cannot contain following characters: `-`, `.`
  - Package version has to be `<int>.<int>.<int>`
