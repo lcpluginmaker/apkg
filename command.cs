@@ -50,7 +50,7 @@ namespace LeoConsole_apkg {
             ApkgOutput.MessageErr0("pass a folder to build");
             return;
           }
-          if (Directory.Exists(_InputProperties[2])) {
+          if (!Directory.Exists(_InputProperties[2])) {
             ApkgOutput.MessageErr0("the folder you passed doesn't exists");
             return;
           }
@@ -69,11 +69,14 @@ namespace LeoConsole_apkg {
             return;
           }
           if (Directory.Exists(_InputProperties[2])) {
-            ApkgUtils.RunProcess(
+            if (!ApkgUtils.RunProcess(
                 ApkgUtils.GetBuilderPath(data.SavePath),
                 _InputProperties[2],
                 data.CurrentWorkingPath
-                );
+                )) {
+              ApkgOutput.MessageErr0("error building plugin");
+              return;
+            }
             foreach (string f in Directory.GetFiles(_InputProperties[2])) {
               if (f.EndsWith(".lcpkg")) {
                 ApkgOutput.MessageSuc0("installing built archive: " + f);
@@ -114,7 +117,7 @@ namespace LeoConsole_apkg {
         ApkgOutput.MessageErr1("cannot find your package");
         return;
       }
-      string dlPath = Path.Join(data.DownloadPath, "apkg", "package.lcpkg");
+      string dlPath = Path.Join(data.DownloadPath, "apkg", $"{_InputProperties[2]}.lcpkg");
       if (!ApkgUtils.DownloadFile(url, dlPath)) {
         return;
       }

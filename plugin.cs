@@ -63,7 +63,7 @@ namespace LeoConsole_apkg {
         ApkgOutput.MessageSuc0("repos list not found, enabling main repository");
         ApkgRepository repository = new ApkgRepository(data.SavePath);
         // enable main repository by default
-        string[] lines = {"https://raw.githubusercontent.com/alexcoder04/LeoConsole-apkg-repo-main/main/index.json"};
+        string[] lines = {"https://raw.githubusercontent.com/alexcoder04/LeoConsole-repo-main/main/index.json"};
         using (StreamWriter f = new StreamWriter(reposListFile)) {
           foreach (string line in lines) {
             f.WriteLine(line);

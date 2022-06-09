@@ -13,8 +13,9 @@ namespace LeoConsole_apkg {
       savePath = sp;
       configDir = Path.Join(savePath, "var", "apkg");
       reposFolder = Path.Join(configDir, "repos-index");
+      index = Enumerable.Empty<RepoPackage>().ToList();
       foreach (string r in Directory.GetFiles(reposFolder)) {
-        string text = System.IO.File.ReadAllText(r);
+        string text = File.ReadAllText(r);
         RepoIndex thisRepoIndex = JsonSerializer.Deserialize<RepoIndex>(text);
         foreach (RepoPackage p in thisRepoIndex.packageList) {
           index.Add(p);
@@ -79,7 +80,7 @@ namespace LeoConsole_apkg {
     public void InstallLcpkg(string archiveFile) {
       ApkgOutput.MessageSuc0("installing package");
       ApkgOutput.MessageSuc1("preparing to extract package");
-      string extractPath = Path.Join(savePath, "tmp", "plugin-extract");
+      string extractPath = Path.Join(savePath, "tmp", "apkg", Path.GetFileName(archiveFile).Replace(".lcpkg", ""));
       // delete directory if already exists
       if (Directory.Exists(extractPath)) {
         if (!ApkgUtils.DeleteDirectory(extractPath)) {
