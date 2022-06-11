@@ -1,5 +1,5 @@
 bin
 Debug
 obj
-*.lcpkg
+*.lcp
 share

@@ -135,17 +135,7 @@ namespace LeoConsole_apkg {
           );
       foreach (string file in manifest.files) {
         ApkgOutput.MessageSuc1("copying " + file);
-        // create parent folders
-        string[] parts = file.Split("/");
-        for (int i = 0; i < parts.Length - 1; i++) {
-          string d = "";
-          for (int j = 0; j <= i; j++) {
-            d = Path.Join(d, parts[j]);
-          }
-          if (!Directory.Exists(Path.Join(savePath, d))) {
-            Directory.CreateDirectory(Path.Join(savePath, d));
-          }
-        }
+        Directory.CreateDirectory(Directory.GetParent(Path.Join(savePath, file)).FullName);
         // copy file
         File.Copy(
             Path.Join(extractPath, file),
@@ -180,9 +170,17 @@ namespace LeoConsole_apkg {
           string path = Path.Join(savePath, f);
           ApkgOutput.MessageSuc1("deleting " + path);
           File.Delete(path);
+          string parent = Directory.GetParent(path).FullName;
+          while (parent != savePath) {
+            if (Directory.EnumerateFileSystemEntries(parent).Any()) {
+              break;
+            }
+            ApkgUtils.DeleteDirectory(parent);
+            parent = Directory.GetParent(parent).FullName;
+          }
         }
       } catch (Exception e) {
-        ApkgOutput.MessageErr0("removing package failed");
+        ApkgOutput.MessageErr0("removing package failed: " + e.Message);
         return;
       }
       ApkgIntegrity.Unregister(p, savePath);
