@@ -142,7 +142,10 @@ namespace LeoConsole_apkg {
             Path.Join(savePath, file),
             true
             );
-        if (file.StartsWith("share/scripts") && ApkgUtils.GetRunningOS() == "lnx64") {
+        if (
+            (file.StartsWith("share/scripts") || file.StartsWith("share/go-plugin")) 
+            && ApkgUtils.GetRunningOS() == "lnx64"
+            ) {
           ApkgOutput.MessageSuc1("marking " + file + " as executable");
           if (!ApkgUtils.RunProcess("chmod", "+x " + Path.Join(savePath, file), savePath)) {
             ApkgOutput.MessageWarn1("cannot mark " + file + " as executable");
