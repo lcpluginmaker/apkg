@@ -16,6 +16,7 @@ case "$APKG_BUILDER_OS" in
 esac
 
 mkdir -vp "./share/scripts"
+rm -vf "./share/scripts/"*
 wget -nv -O "./share/scripts/$builder_file" "$BUILDER_REPO/releases/latest/download/$builder_file" || exit 1
 
 # copy docs
