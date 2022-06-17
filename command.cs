@@ -7,6 +7,7 @@ namespace LeoConsole_apkg {
     public string Name { get { return "apkg"; } }
     public string Description { get { return "advanced package manager"; } }
     public Action CommandFunktion { get { return () => Command(); } }
+    public Action HelpFunktion { get { return () => apkg_do_help(); } }
     private string[] _InputProperties;
     public string[] InputProperties
       { get { return _InputProperties; } set { _InputProperties = value; } }
@@ -105,7 +106,7 @@ namespace LeoConsole_apkg {
         return;
       }
       try {
-        repository.Reload();
+        repository.Reload(config.Repositories);
       } catch (Exception e) {
         ApkgOutput.MessageErr0("error reloading package database");
         return;
@@ -192,7 +193,7 @@ namespace LeoConsole_apkg {
 
     private void apkg_do_reload() {
       try {
-        repository.Reload();
+        repository.Reload(config.Repositories);
       } catch (Exception e) {
         ApkgOutput.MessageErr0("error realoding package database");
         return;

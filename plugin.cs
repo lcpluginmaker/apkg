@@ -57,21 +57,13 @@ namespace LeoConsole_apkg {
           }
         }
       }
-      // check if repositories are configured
-      string reposListFile = Path.Join(data.SavePath, "var", "apkg", "repos");
-      if (!File.Exists(reposListFile)) {
-        ApkgOutput.MessageSuc0("repos list not found, enabling main repository");
+      // install itself if not installed
+      if (!Directory.Exists(Path.Join(data.SavePath, "var", "apkg", "installed", "apkg"))) {
+        ApkgConfig config = ApkgConfigHelper.ReadConfig(Path.Join(data.SavePath, "var", "apkg"));
         ApkgRepository repository = new ApkgRepository(data.SavePath);
-        // enable main repository by default
-        string[] lines = {"https://raw.githubusercontent.com/alexcoder04/LeoConsole-repo-main/main/index.json"};
-        using (StreamWriter f = new StreamWriter(reposListFile)) {
-          foreach (string line in lines) {
-            f.WriteLine(line);
-          }
-        }
         // reload
         try {
-          repository.Reload();
+          repository.Reload(config.Repositories);
         } catch (Exception e) {
           ApkgOutput.MessageErr0("error reloading package database");
           ApkgOutput.MessageErr0("something seems to be broken, you can not use apkg");
@@ -88,6 +80,7 @@ namespace LeoConsole_apkg {
         }
         string dlPath = Path.Join(data.SavePath, "tmp", "apkg.lcp");
         if (!ApkgUtils.DownloadFile(url, dlPath)) {
+          ApkgOutput.MessageErr1("could not download apkg");
           return;
         }
         repository.InstallLcpkg(dlPath);

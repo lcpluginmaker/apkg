@@ -24,9 +24,6 @@ namespace LeoConsole_apkg {
     }
 
     public string GetUrlFor(string package) {
-      if (index.Count() < 1) {
-        Reload();
-      }
       foreach (RepoPackage p in index) {
         if (p.name == package && (p.os == "any" || p.os == ApkgUtils.GetRunningOS())) {
           return p.url;
@@ -37,31 +34,18 @@ namespace LeoConsole_apkg {
 
     public IList<string> AvailablePlugins() {
       IList<string> pluginsList = Enumerable.Empty<string>().ToList();
-      if (index.Count() < 1) {
-        try {
-          Reload();
-        } catch (Exception e) {
-          return pluginsList;
-        }
-      }
       foreach (RepoPackage p in index) {
         pluginsList.Add(p.name);
       }
       return pluginsList;
     }
 
-    public void Reload() {
-      string reposListFile = Path.Join(configDir, "repos");
-      ApkgOutput.MessageSuc0("reloading package index");
+    public void Reload(ConfigRepo[] repos) {
       IList<RepoPackage> newIndex = Enumerable.Empty<RepoPackage>().ToList();
-      if (!File.Exists(reposListFile)) {
-        ApkgOutput.MessageErr0("repos list ($SAVEPATH/var/apkg/repos) does not exist");
-        throw new Exception("repos file does not exist");
-      }
-      foreach (string repo in File.ReadLines(reposListFile)) {
-        ApkgOutput.MessageSuc1("loading " + repo);
-        if (!ApkgUtils.DownloadFile(repo, Path.Join(savePath, "tmp", "repo.json"))) {
-          throw new Exception("error downloading " + repo);
+      foreach (ConfigRepo repo in repos) {
+        ApkgOutput.MessageSuc1("loading " + repo.name);
+        if (!ApkgUtils.DownloadFile(repo.url, Path.Join(savePath, "tmp", "repo.json"))) {
+          throw new Exception("error downloading " + repo.name);
         }
         string text = System.IO.File.ReadAllText(Path.Join(savePath, "tmp", "repo.json"));
         RepoIndex thisRepoIndex = JsonSerializer.Deserialize<RepoIndex>(text);
