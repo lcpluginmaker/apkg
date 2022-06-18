@@ -16,7 +16,7 @@ namespace LeoConsole_apkg {
     private ApkgRepository repository;
     private ApkgConfig config;
 
-    private const string apkgVersion="1.1.0";
+    private const string apkgVersion="1.2.1";
     private string configFolder;
 
     public LeoConsoleApkgCommand(string savePath) {

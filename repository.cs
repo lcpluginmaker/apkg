@@ -14,13 +14,18 @@ namespace LeoConsole_apkg {
       configDir = Path.Join(savePath, "var", "apkg");
       reposFolder = Path.Join(configDir, "repos-index");
       index = Enumerable.Empty<RepoPackage>().ToList();
-      foreach (string r in Directory.GetFiles(reposFolder)) {
-        string text = File.ReadAllText(r);
-        RepoIndex thisRepoIndex = JsonSerializer.Deserialize<RepoIndex>(text);
-        foreach (RepoPackage p in thisRepoIndex.packageList) {
-          index.Add(p);
+      if (Directory.Exists(reposFolder)) {
+        foreach (string r in Directory.GetFiles(reposFolder)) {
+          string text = File.ReadAllText(r);
+          RepoIndex thisRepoIndex = JsonSerializer.Deserialize<RepoIndex>(text);
+          foreach (RepoPackage p in thisRepoIndex.packageList) {
+            index.Add(p);
+          }
         }
+        return;
       }
+      ApkgOutput.MessageWarn1("could not find repo cache, package list could not be loaded");
+      ApkgOutput.MessageWarn1("please run 'apkg reload'");
     }
 
     public string GetUrlFor(string package) {

@@ -26,6 +26,9 @@ namespace LeoConsole_apkg {
         defRepo.url = "https://raw.githubusercontent.com/alexcoder04/LeoConsole-repo-main/main/index.json";
         defConf.Repositories = new ConfigRepo[]{defRepo};
         string jsonString = JsonSerializer.Serialize(defConf);
+        if (!Directory.Exists(Directory.GetParent(configFile).FullName)) {
+          Directory.CreateDirectory(Directory.GetParent(configFile).FullName);
+        }
         using (StreamWriter f = new StreamWriter(configFile)) {
           f.WriteLine(jsonString);
         }

@@ -1,7 +1,7 @@
 {
   "manifestVersion": 2.1,
   "packageName": "apkg",
-  "packageVersion": "1.1.0",
+  "packageVersion": "1.2.1",
   "build": {
     "command": "/bin/sh",
     "args": ["./build.sh"],
