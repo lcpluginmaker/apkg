@@ -3,10 +3,12 @@
 
 ```json
 {
-    "manifestVersion": 1.1,
+    "manifestVersion": 2.0,
     "packageName": "apkg"
-    "packageVersion": "0.4.1",
+    "packageVersion": "1.2.1",
     "packageOS": "win64",
+    "compatibleVersions": ["2.0.0"],
+    "depends": [],
     "files": [
         "plugins/apkg.dll",
         "share/docs/apkg/Packaging.md"

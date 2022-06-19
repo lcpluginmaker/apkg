@@ -12,6 +12,8 @@ namespace LeoConsole_apkg {
     public string description { get; set; }
     public string version { get; set; }
     public string os { get; set; }
+    public string[] lc { get; set; }
+    public string[] depends { get; set; }
     public string url { get; set; }
   }
 
@@ -23,10 +25,14 @@ namespace LeoConsole_apkg {
     public string bugTracker { get; set; }
   }
 
-  // class to serialize lcpkg manifests into
+  // class to serialize lcp manifests into
   public class PkgArchiveManifest {
+    public float manifestVersion { get; set; }
     public string packageName { get; set; }
     public string packageVersion { get; set; }
+    public string packageOS { get; set; }
+    public string[] compatibleVersions { get; set; }
+    public string[] depends { get; set; }
     public string[] files { get; set; }
     public ManifestProjectData project { get; set; }
   }

@@ -8,8 +8,10 @@ namespace LeoConsole_apkg {
     private string savePath;
     private string configDir;
     private string reposFolder;
+    private string lcVersion;
 
-    public ApkgRepository(string sp) {
+    public ApkgRepository(string sp, string v) {
+      lcVersion = v;
       savePath = sp;
       configDir = Path.Join(savePath, "var", "apkg");
       reposFolder = Path.Join(configDir, "repos-index");
@@ -30,7 +32,11 @@ namespace LeoConsole_apkg {
 
     public string GetUrlFor(string package) {
       foreach (RepoPackage p in index) {
-        if (p.name == package && (p.os == "any" || p.os == ApkgUtils.GetRunningOS())) {
+        if (
+            p.name == package
+            && (p.os == "any" || p.os == ApkgUtils.GetRunningOS())
+            && Array.Exists(p.lc, e => e == lcVersion)
+            ) {
           return p.url;
         }
       }
@@ -40,7 +46,12 @@ namespace LeoConsole_apkg {
     public IList<string> AvailablePlugins() {
       IList<string> pluginsList = Enumerable.Empty<string>().ToList();
       foreach (RepoPackage p in index) {
-        pluginsList.Add(p.name);
+        if (
+            (p.os == "any" || p.os == ApkgUtils.GetRunningOS())
+            && Array.Exists(p.lc, e => e == lcVersion)
+            ) {
+          pluginsList.Add(p.name);
+        }
       }
       return pluginsList;
     }
@@ -95,6 +106,24 @@ namespace LeoConsole_apkg {
       ApkgOutput.MessageSuc0("checking package integrity");
       string text = File.ReadAllText(Path.Join(extractPath, "PKGINFO.json"));
       PkgArchiveManifest manifest = JsonSerializer.Deserialize<PkgArchiveManifest>(text);
+      if (!Array.Exists(manifest.compatibleVersions, e => e == lcVersion)) {
+        ApkgOutput.MessageErr1("your LeoConsole version is incompatible with this plugin");
+        return;
+      }
+      foreach (string pack in manifest.depends) {
+        string url;
+        try {
+          url = GetUrlFor(pack);
+        } catch (Exception e) {
+          ApkgOutput.MessageErr1("cannot find your package");
+          return;
+        }
+        string dlPath = Path.Join(savePath, "tmp", "apkg", $"{pack}.lcp");
+        if (!ApkgUtils.DownloadFile(url, dlPath)) {
+          return;
+        }
+        InstallLcpkg(dlPath);
+      }
       if (!ApkgIntegrity.CheckPkgConflicts(manifest.files, savePath)) {
         if (Directory.Exists(Path.Join(configDir, "installed", manifest.packageName))) {
           string installedVersion = File.ReadAllText(Path.Join(configDir, "installed", manifest.packageName, "version")).Trim();

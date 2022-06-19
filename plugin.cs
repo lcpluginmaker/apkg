@@ -34,7 +34,7 @@ namespace LeoConsole_apkg {
     }
 
     public void RegisterCommands(){
-      _Commands.Add(new LeoConsoleApkgCommand(data.SavePath));
+      _Commands.Add(new LeoConsoleApkgCommand(data.SavePath, data.Version));
     }
     
     public void PluginMain() {
@@ -60,7 +60,7 @@ namespace LeoConsole_apkg {
       // install itself if not installed
       if (!Directory.Exists(Path.Join(data.SavePath, "var", "apkg", "installed", "apkg"))) {
         ApkgConfig config = ApkgConfigHelper.ReadConfig(Path.Join(data.SavePath, "var", "apkg"));
-        ApkgRepository repository = new ApkgRepository(data.SavePath);
+        ApkgRepository repository = new ApkgRepository(data.SavePath, data.Version);
         // reload
         try {
           repository.Reload(config.Repositories);

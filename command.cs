@@ -16,11 +16,11 @@ namespace LeoConsole_apkg {
     private ApkgRepository repository;
     private ApkgConfig config;
 
-    private const string apkgVersion="1.2.1";
+    private const string apkgVersion="1.3.0";
     private string configFolder;
 
-    public LeoConsoleApkgCommand(string savePath) {
-      repository = new ApkgRepository(savePath);
+    public LeoConsoleApkgCommand(string savePath, string lcVersion) {
+      repository = new ApkgRepository(savePath, lcVersion);
       configFolder = Path.Join(savePath, "var", "apkg");
       config = ApkgConfigHelper.ReadConfig(configFolder);
     }
@@ -175,8 +175,11 @@ namespace LeoConsole_apkg {
           "cache/download directory:  "
           + Path.Join(data.DownloadPath, "apkg"));
       ApkgOutput.MessageSuc1(
-          "installation directory:    "
+          "plugin installation directory:    "
           + Path.Join(data.SavePath, "plugins"));
+      ApkgOutput.MessageSuc1(
+          "share installation directory:    "
+          + Path.Join(data.SavePath, "share"));
       ApkgOutput.MessageSuc1(
           "config/database directory: "
           + Path.Join(configFolder));
