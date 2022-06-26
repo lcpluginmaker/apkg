@@ -1,5 +1,6 @@
 using ILeoConsole.Core;
 
+// TODO: this functionality will be integrated into ILeoConsole soon
 namespace LeoConsole_apkg {
   public class ApkgOutput {
     // PRINTING NICE MESSAGES

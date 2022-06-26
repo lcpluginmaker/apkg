@@ -128,16 +128,12 @@ namespace LeoConsole_apkg {
         if (Directory.Exists(Path.Join(configDir, "installed", manifest.packageName))) {
           string installedVersion = File.ReadAllText(Path.Join(configDir, "installed", manifest.packageName, "version")).Trim();
           if (installedVersion == manifest.packageVersion) {
-            Console.WriteLine("reinstall same package version [y/n]?");
-            string answer = Console.ReadLine();
-            if (answer.ToLower() != "y") {
+            if (!LConsole.YesNoDialog("reinstall same package version?", true)) {
               ApkgOutput.MessageErr1("installation aborted");
               return;
             }
           } else if (ApkgUtils.VersionGreater(installedVersion, manifest.packageVersion)) {
-            Console.WriteLine("downgrade package (" + installedVersion + "->" + manifest.packageVersion + ") [y/n]?");
-            string answer = Console.ReadLine();
-            if (answer.ToLower() != "y") {
+            if (!LConsole.YesNoDialog($"downgrade package ({installedVersion}->{manifest.packageVersion})?", false)) {
               ApkgOutput.MessageErr1("installation aborted");
               return;
             }
@@ -148,9 +144,7 @@ namespace LeoConsole_apkg {
           return;
         }
       }
-      ApkgOutput.MessageSuc0(
-          $"installing files for {manifest.packageName} from {manifest.project.maintainer}"
-          );
+      ApkgOutput.MessageSuc0($"installing files for {manifest.project.maintainer}/{manifest.packageName}");
       foreach (string file in manifest.files) {
         ApkgOutput.MessageSuc1("copying " + file);
         Directory.CreateDirectory(Directory.GetParent(Path.Join(savePath, file)).FullName);
