@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace LeoConsole_apkg {
   public class ApkgUtils {
-    // delete directory
+    // DeleteDirectory() {{{
     public static bool DeleteDirectory(string folder) {
       try {
         Directory.Delete(folder, true);
@@ -17,9 +17,9 @@ namespace LeoConsole_apkg {
       }
       ApkgOutput.MessageSuc1("" + folder + " deleted");
       return true;
-    }
+    } // }}}
 
-    // get running os
+    // GetRunningOS() {{{
     public static string GetRunningOS() {
       if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
         return "win64";
@@ -28,28 +28,29 @@ namespace LeoConsole_apkg {
         return "lnx64";
       }
       return "other";
-    }
+    } // }}}
 
-    // get path of the apkg-builder binary
+    // GetBuilderPath() {{{
     public static string GetBuilderPath(string savePath) {
+      string basePath = Path.Join(savePath, "share", "scripts");
       if (GetRunningOS() == "lnx64") {
-        string path = Path.Join(savePath, "share", "scripts", "apkg-build-lnx64");
+        string path = Path.Join(basePath, "apkg-build-lnx64");
         if (File.Exists(path)) {
           return path;
         }
         throw new Exception("builder binary not found");
       }
       if (GetRunningOS() == "win64") {
-        string path = Path.Join(savePath, "share", "scripts", "apkg-build-win64.exe");
+        string path = Path.Join(basePath, "apkg-build-win64.exe");
         if (File.Exists(path)) {
           return path;
         }
         throw new Exception("builder binary not found");
       }
       throw new Exception("unknown OS");
-    }
+    } // }}}
 
-    // run a process with parameters and wait for it to finish
+    // RunProcess() {{{
     public static bool RunProcess(string name, string args, string pwd) {
       try {
         Process p = new Process();
@@ -59,19 +60,19 @@ namespace LeoConsole_apkg {
         p.Start();
         p.WaitForExit();
         if (p.ExitCode != 0) {
-          ApkgOutput.MessageErr1("" + name + " returned an error");
+          ApkgOutput.MessageErr1($"{name} returned an error");
           return false;
         }
       } catch (Exception e) {
-        ApkgOutput.MessageErr1("cannot run " + name + ": " + e.Message);
+        ApkgOutput.MessageErr1($"cannot run {name}: {e.Message}");
         return false;
       }
       return true;
-    }
+    } // }}}
 
-    // download a file to given location
+    // DownloadFile() {{{
     public static bool DownloadFile(string url, string location) {
-      ApkgOutput.MessageSuc1("downloading " + url + " to " + location + "...");
+      ApkgOutput.MessageSuc1($"downloading {url} to {location}...");
       try {
         WebClient webClient = new WebClient();
         webClient.DownloadFile(url, location);
@@ -80,9 +81,9 @@ namespace LeoConsole_apkg {
         return false;
       }
       return true;
-    }
+    } // }}}
 
-    // compare two semantic versions
+    // VersionGreater() {{{
     public static bool VersionGreater(string v1, string v2) {
       string[] v1a = v1.Split(".");
       string[] v2a = v2.Split(".");
@@ -95,8 +96,9 @@ namespace LeoConsole_apkg {
         }
       }
       return false;
-    }
+    } // }}}
 
+    // PrintCopyright() {{{
     public static void PrintCopyright(){
       Console.WriteLine(@"
 Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>
@@ -107,8 +109,9 @@ This is free software, and you are welcome to redistribute it
 under certain conditions, see <https://www.gnu.org/licenses/gpl-3.0.txt>
 for more details.
 ");
-    }
+    } // }}}
 
+    // FirstRun() {{{
     public static void FirstRun() {
       PrintCopyright();
       Console.WriteLine(@"
@@ -124,8 +127,7 @@ Enjoy apkg!
 (press any key to continue...)
 ");
       Console.ReadKey();
-    }
-
+    } // }}}
   }
 }
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 
 namespace LeoConsole_apkg {
+  // IData {{{
   public class ConsoleData : IData {
     public static User _User;
     public User User { get { return _User; } set { _User = value; } }
@@ -17,8 +18,10 @@ namespace LeoConsole_apkg {
     public static string _CurrentWorkingPath;
     public string CurrentWorkingPath { get { return _CurrentWorkingPath; } set { _CurrentWorkingPath = value; } }
   }
+  // }}}
   
   public class ApkgPlugin : IPlugin {
+    // default stuff {{{
     public string Name { get { return "apkg"; } }
     public string Explanation { get { return "advanced package manager"; } }
     
@@ -27,6 +30,7 @@ namespace LeoConsole_apkg {
     
     private List<ICommand> _Commands;
     public List<ICommand> Commands { get { return _Commands; } set { _Commands = value; } }
+    // }}}
 
     public void PluginInit(){
       _data = new ConsoleData();
@@ -39,7 +43,7 @@ namespace LeoConsole_apkg {
     
     public void PluginMain() {
       ApkgOutput.MessageSuc0("performing apkg self-check");
-      // check if folders exist
+      // check if folders exist {{{
       string[] folders = {
         Path.Join(data.SavePath, "var"),
         Path.Join(data.SavePath, "var", "apkg"),
@@ -52,12 +56,15 @@ namespace LeoConsole_apkg {
           try {
             Directory.CreateDirectory(folder);
           } catch (Exception e) {
-            ApkgOutput.MessageErr1("cannot create var dir: " + e.Message);
+            ApkgOutput.MessageErr1("cannot create apkg dir: " + e.Message);
+            ApkgOutput.MessageErr0("something seems to be broken, you can not use apkg");
             return;
           }
         }
       }
-      // install itself if not installed
+      // }}}
+
+      // install itself if not installed {{{
       if (!Directory.Exists(Path.Join(data.SavePath, "var", "apkg", "installed", "apkg"))) {
         ApkgConfig config = ApkgConfigHelper.ReadConfig(Path.Join(data.SavePath, "var", "apkg"));
         ApkgRepository repository = new ApkgRepository(data.SavePath, data.Version);
@@ -81,12 +88,14 @@ namespace LeoConsole_apkg {
         string dlPath = Path.Join(data.SavePath, "tmp", "apkg.lcp");
         if (!ApkgUtils.DownloadFile(url, dlPath)) {
           ApkgOutput.MessageErr1("could not download apkg");
+          ApkgOutput.MessageErr0("something seems to be broken, you can not use apkg");
           return;
         }
         repository.InstallLcpkg(dlPath);
       }
       ApkgOutput.MessageSuc1("self-check successfull");
     }
+    // }}}
 
     public void PluginShutdown() { }
   }

@@ -2,6 +2,7 @@ using System.Linq;
 
 namespace LeoConsole_apkg {
   public class ApkgIntegrity {
+    // CheckPkgConflicts() {{{
     public static bool CheckPkgConflicts(string[] files, string savePath) {
       IList<string> installed;
       try {
@@ -16,28 +17,25 @@ namespace LeoConsole_apkg {
         }
       }
       return true;
-    }
+    } // }}}
 
+    // Register() {{{
     public static void Register(string p, string pVersion, string[] f, string savePath) {
-      ApkgOutput.MessageSuc0("registering package " + p + " v" + pVersion);
-      Directory.CreateDirectory(
-          Path.Join(savePath, "var", "apkg", "installed", p)
-          );
-      File.WriteAllLines(
-          Path.Join(savePath, "var", "apkg", "installed", p, "files"), f
-          );
-      string[] cont = {pVersion};
-      File.WriteAllLines(
-          Path.Join(savePath, "var", "apkg", "installed", p, "version"), cont
-          );
-    }
+      ApkgOutput.MessageSuc0($"registering package {p} v{pVersion}");
+      string baseDir = Path.Join(savePath, "var", "apkg", "installed", p);
+      Directory.CreateDirectory(baseDir);
+      File.WriteAllLines(Path.Join(baseDir, "files"), f);
+      File.WriteAllLines(Path.Join(baseDir, "version"), {pVersion});
+    } // }}}
 
+    // Unregister() {{{
     public static void Unregister(string p, string savePath) {
       ApkgUtils.DeleteDirectory(
           Path.Join(savePath, "var", "apkg", "installed", p)
           );
-    }
+    } // }}}
 
+    // InstalledFiles() {{{
     public static IList<string> InstalledFiles(string savePath) {
       string databaseFolder = Path.Join(savePath, "var", "apkg", "installed");
       IList<string> res = Enumerable.Empty<string>().ToList();
@@ -47,7 +45,7 @@ namespace LeoConsole_apkg {
         }
       }
       return res;
-    }
+    } // }}}
   }
 }
 
