@@ -147,14 +147,16 @@ namespace LeoConsole_apkg {
     // list_installed() {{{
     private void apkg_do_list_installed() {
       ApkgOutput.MessageSuc0("your installed packages:");
-      try {
-        foreach (string filename in Directory.GetDirectories(
-              Path.Join(ConfigFolder, "installed")
-              )){
-          ApkgOutput.MessageSuc1(Path.GetFileName(filename));
+      foreach (string filename in Directory.GetDirectories(
+            Path.Join(ConfigFolder, "installed")
+            )){
+        string p = Path.GetFileName(filename);
+        try {
+          RepoPackage info = Repository.GetInfoFor(p);
+          ApkgOutput.MessageSuc1($"{p} - {info.description}");
+        } catch (Exception e) {
+          ApkgOutput.MessageErr1($"{p} not found: {e.Message}");
         }
-      } catch (Exception e) {
-        ApkgOutput.MessageErr1(e.Message);
       }
     } // }}}
 
@@ -172,7 +174,8 @@ namespace LeoConsole_apkg {
       IList<string> list = Repository.AvailablePlugins();
       ApkgOutput.MessageSuc0("available packages:");
       foreach (string p in list) {
-        ApkgOutput.MessageSuc1(p);
+        RepoPackage info = Repository.GetInfoFor(p);
+        ApkgOutput.MessageSuc1($"{p} - {info.description}");
       }
     } // }}}
     
@@ -181,14 +184,18 @@ namespace LeoConsole_apkg {
       string keyword = _Arguments[2];
       IList<string> list = Repository.AvailablePlugins();
       ApkgOutput.MessageSuc0("results:");
-      if (list.Length < 1) {
+      IList<string> matches = Enumerable.Empty<string>().ToList();
+      foreach (string p in list) {
+        if (p.ToLower().Contains(keyword.ToLower())) {
+          matches.Add(p);
+        }
+      }
+      if (matches.Count < 1) {
         ApkgOutput.MessageErr1("none");
         return;
       }
-      foreach (string p in list) {
-        if (p.ToLower().Contains(keyword.ToLower())) {
-          ApkgOutput.MessageSuc1(p);
-        }
+      foreach (string p in matches) {
+        ApkgOutput.MessageSuc1(p);
       }
     } // }}}
 
@@ -198,9 +205,9 @@ namespace LeoConsole_apkg {
       ApkgOutput.MessageSuc1(
           $"cache/download directory:      {Path.Join(data.DownloadPath, "apkg")}");
       ApkgOutput.MessageSuc1(
-          $"plugin installation directory: {Path.Join(data.SavePath, "plugins"))}");
+          $"plugin installation directory: {Path.Join(data.SavePath, "plugins")}");
       ApkgOutput.MessageSuc1(
-          $"share installation directory:  {Path.Join(data.SavePath, "share"))}");
+          $"share installation directory:  {Path.Join(data.SavePath, "share")}");
       ApkgOutput.MessageSuc1(
           $"config/database directory:     {ConfigFolder}");
       ApkgOutput.MessageSuc1(

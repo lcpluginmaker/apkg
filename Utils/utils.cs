@@ -7,18 +7,6 @@ using System.Text.Json;
 
 namespace LeoConsole_apkg {
   public class ApkgUtils {
-    // DeleteDirectory() {{{
-    public static bool DeleteDirectory(string folder) {
-      try {
-        Directory.Delete(folder, true);
-      } catch (Exception e) {
-        ApkgOutput.MessageErr1("cannot delete " + folder + ": " + e.Message);
-        return false;
-      }
-      ApkgOutput.MessageSuc1("" + folder + " deleted");
-      return true;
-    } // }}}
-
     // GetRunningOS() {{{
     public static string GetRunningOS() {
       if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {

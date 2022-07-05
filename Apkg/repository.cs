@@ -33,8 +33,18 @@ namespace LeoConsole_apkg {
           Index.Add(p);
         }
       }
+    } // }}}
+
+    // GetInfoFor() {{{
+    public RepoPackage GetInfoFor(string package) {
+      foreach (RepoPackage rp in Index) {
+        if (rp.name == package) {
+          return rp;
+        }
+      }
+      throw new Exception("package not found");
     }
-    // }}}
+    //}}}
 
     // GetUrlFor() {{{
     public string GetUrlFor(string package) {
@@ -92,21 +102,13 @@ namespace LeoConsole_apkg {
       string extractPath = Path.Join(DownloadPath, Path.GetFileName(path).Replace(".lcp", ""));
       // delete directory if already exists
       if (Directory.Exists(extractPath)) {
-        if (!ApkgUtils.DeleteDirectory(extractPath)) {
-          throw new Exception("cannot clean plugin extract directory");
-        }
+        Directory.Delete(extractPath, true);
       }
       Directory.CreateDirectory(extractPath);
       // extract package archive
       ApkgOutput.MessageSuc0("extracting package");
-      ZipFile.ExtractToDirectory(archiveFile, extractPath);
+      ZipFile.ExtractToDirectory(path, extractPath);
       return extractPath;
-    } // }}}
-
-    // ReadManifest() {{{
-    private PkgArchiveManifest ReadManifest(string folder) {
-      string text = File.ReadAllText(Path.Join(folder, "PKGINFO.json"));
-      return JsonSerializer.Deserialize<PkgArchiveManifest>(text);
     } // }}}
 
     // InstallFiles() {{{
@@ -133,15 +135,16 @@ namespace LeoConsole_apkg {
       ApkgOutput.MessageSuc0("installing package");
       ApkgOutput.MessageSuc1("preparing to extract package");
 
-      string tempFolder;
+      string tempFolder = "";
       try {
         tempFolder = ExtractLcp(archiveFile);
       } catch (Exception e) {
         ApkgOutput.MessageErr0($"cannot extract lcp archive: {e.Message}");
+        return;
       }
 
       ApkgOutput.MessageSuc0("checking package compatibility");
-      PkgArchiveManifest manifest = ReadManifest(tempFolder);
+      PkgArchiveManifest manifest = FileUtils.ReadManifest(tempFolder);
       
       if (!Array.Exists(manifest.compatibleVersions, e => e == LeoConsoleVersion)) {
         ApkgOutput.MessageErr1("your LeoConsole version is incompatible with this plugin");
@@ -164,26 +167,28 @@ namespace LeoConsole_apkg {
         InstallLcpkg(dlPath);
       } // }}}
 
-      // TODO: check with which package(s) exactly incompatible {{{
-      if (!ApkgIntegrity.CheckPkgConflicts(manifest.files, SavePath)) {
-        if (Directory.Exists(Path.Join(ConfigDir, "installed", manifest.packageName))) {
-          string installedVersion = File.ReadAllText(Path.Join(ConfigDir, "installed", manifest.packageName, "version")).Trim();
-          if (installedVersion == manifest.packageVersion) {
-            if (!LConsole.YesNoDialog("reinstall same package version?", true)) {
-              ApkgOutput.MessageErr1("installation aborted");
-              return;
-            }
-          } else if (ApkgUtils.VersionGreater(installedVersion, manifest.packageVersion)) {
-            if (!LConsole.YesNoDialog($"downgrade package ({installedVersion}->{manifest.packageVersion})?", false)) {
-              ApkgOutput.MessageErr1("installation aborted");
-              return;
-            }
-          }
-          RemovePackage(manifest.packageName);
-        } else {
-          ApkgOutput.MessageErr1("this package conflicts with some installed package");
+      // check conflicts {{{
+      string conflictsWith = ApkgIntegrity.CheckPkgConflicts(manifest.files, SavePath);
+      if (conflictsWith != "") {
+        if (conflictsWith != manifest.packageName) {
+          ApkgOutput.MessageErr0($"{manifest.packageName} conflicts with {conflictsWith}, aborting install");
           return;
         }
+        // conflicting with itself ask about reinstalling {{{
+        string installedVersion = File.ReadAllText(Path.Join(ConfigDir, "installed", manifest.packageName, "version")).Trim();
+        if (installedVersion == manifest.packageVersion) {
+          if (!LConsole.YesNoDialog("reinstall same package version?", true)) {
+            ApkgOutput.MessageErr1("installation aborted");
+            return;
+          }
+        }
+        if (ApkgUtils.VersionGreater(installedVersion, manifest.packageVersion)) {
+          if (!LConsole.YesNoDialog($"downgrade package ({installedVersion}->{manifest.packageVersion})?", false)) {
+            ApkgOutput.MessageErr1("installation aborted");
+            return;
+          }
+        } // }}}
+        RemovePackage(manifest.packageName);
       } // }}}
 
       ApkgOutput.MessageSuc0($"installing files for {manifest.project.maintainer}/{manifest.packageName}");
@@ -198,29 +203,12 @@ namespace LeoConsole_apkg {
     // RemovePackage() {{{
     public void RemovePackage(string p) {
       ApkgOutput.MessageSuc0("removing " + p);
-      if (!Directory.Exists(
-            Path.Join(ConfigDir, "installed", p)
-            )) {
-        ApkgOutput.MessageErr0("this package is not installed");
+      if (!Directory.Exists(Path.Join(ConfigDir, "installed", p))) {
+        ApkgOutput.MessageErr0($"{p} is not installed");
         return;
       }
       try {
-        foreach (string f in File.ReadLines(
-              Path.Join(ConfigDir, "installed", p, "files")
-              )) {
-          string path = Path.Join(SavePath, f);
-          ApkgOutput.MessageSuc1("deleting " + path);
-          File.Delete(path);
-          // delete parent dirs if empty {{{
-          string parent = Directory.GetParent(path).FullName;
-          while (parent != SavePath) {
-            if (Directory.EnumerateFileSystemEntries(parent).Any()) {
-              break;
-            }
-            ApkgUtils.DeleteDirectory(parent);
-            parent = Directory.GetParent(parent).FullName;
-          } // }}}
-        }
+        FileUtils.DeleteFiles(File.ReadLines(Path.Join(ConfigDir, "installed", p, "files")).ToArray(), SavePath);
       } catch (Exception e) {
         ApkgOutput.MessageErr0("removing package failed: " + e.Message);
         return;
