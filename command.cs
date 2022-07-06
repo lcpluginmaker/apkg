@@ -141,7 +141,30 @@ namespace LeoConsole_apkg {
 
     // update() {{{
     private void apkg_do_update() {
-      ApkgOutput.MessageErr0("update function is not implemented yet");
+      IList<string> allPlugins = Repository.AvailablePlugins();
+      ApkgOutput.MessageSuc0("updating plugins:");
+      foreach (string p in allPlugins) {
+        if (!Directory.Exists(Path.Join(data.SavePath, "var", "apkg", "installed", p))) {
+          continue;
+        }
+        string installedVersion = File.ReadAllText(Path.Join(data.SavePath, "var", "apkg", "installed", p, "version")).Trim();
+        string availableVersion = Repository.GetInfoFor(p).version;
+        if (ApkgUtils.VersionGreater(availableVersion, installedVersion)) {
+          ApkgOutput.MessageSuc1($"update available for {p} (v{installedVersion} -> v{availableVersion})");
+          string url = Repository.GetUrlFor(_Arguments[2]);
+          string dlPath = Path.Join(data.DownloadPath, "apkg", $"{_Arguments[2]}.lcp");
+          if (!ApkgUtils.DownloadFile(url, dlPath)) {
+            return;
+          }
+          Repository.InstallLcpkg(dlPath);
+          continue;
+        }
+        if (ApkgUtils.VersionGreater(installedVersion, availableVersion)) {
+          ApkgOutput.MessageWarn1($"{p} is newer than repository (installed {installedVersion}, repo {availableVersion})");
+          continue;
+        }
+        ApkgOutput.MessageSuc1($"{p} is up-to-date");
+      }
     } // }}}
 
     // list_installed() {{{

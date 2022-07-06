@@ -78,7 +78,7 @@ namespace LeoConsole_apkg {
     public void Reload(ConfigRepo[] repos) {
       IList<RepoPackage> newIndex = Enumerable.Empty<RepoPackage>().ToList();
       foreach (ConfigRepo repo in repos) {
-        ApkgOutput.MessageSuc1("loading " + repo.name);
+        ApkgOutput.MessageSuc0("loading " + repo.name);
         string tempFile = Path.Join(DownloadPath, repo.name + ".json");
         if (!ApkgUtils.DownloadFile(repo.url, tempFile)) {
           throw new Exception("error downloading " + repo.name);
