@@ -273,7 +273,7 @@ Available options:
         Console.WriteLine(@"
 Available options in debug mode:
     build:         build plugin in directory
-    get-local:     install local .lcpkg file");
+    get-local:     install local .lcp file");
       }
     } // }}}
     // }}}

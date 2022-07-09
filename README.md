@@ -36,7 +36,7 @@ unstable):
 2. `git clone https://github.com/alexcoder04/LeoConsole-apkg.git && cd LeoConsole-apkg`
 3. `apkg-builder "$PWD"`
 4. Enable debug mode in apkg (add `debugModeOn` to your `$SAVEPATH/var/apkg/config`)
-4. in LeoConsole, type `apkg get-local <apkg-repo>/apkg.lcpkg`
+4. in LeoConsole, type `apkg get-local <apkg-repo>/apkg.lcp`
 
 ## Documentation
 

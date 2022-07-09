@@ -55,7 +55,7 @@ Such an `index.json` file looks like this:
 
 ## Notes
 
- - Naming convention for `.lcpkg` files: `pkgname-os-version.lcp`
+ - Naming convention for `.lcp` files: `pkgname-os-version.lcp`
  - Package/repository names should be all lowercase
  - Package names cannot contain following characters: `-`, `.`
  - Package version has to be `<int>.<int>.<int>`
