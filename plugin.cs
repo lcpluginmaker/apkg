@@ -42,7 +42,7 @@ namespace LeoConsole_apkg {
     }
     
     public void PluginMain() {
-      ApkgOutput.MessageSuc0("performing apkg self-check");
+      LConsole.MessageSuc0("performing apkg self-check");
       // check if folders exist {{{
       string[] folders = {
         Path.Join(data.SavePath, "var"),
@@ -56,8 +56,8 @@ namespace LeoConsole_apkg {
           try {
             Directory.CreateDirectory(folder);
           } catch (Exception e) {
-            ApkgOutput.MessageErr1("cannot create apkg dir: " + e.Message);
-            ApkgOutput.MessageErr0("something seems to be broken, you can not use apkg");
+            LConsole.MessageErr1("cannot create apkg dir: " + e.Message);
+            LConsole.MessageErr0("something seems to be broken, you can not use apkg");
             return;
           }
         }
@@ -72,8 +72,8 @@ namespace LeoConsole_apkg {
         try {
           repository.Reload(config.Repositories);
         } catch (Exception e) {
-          ApkgOutput.MessageErr0("error reloading package database");
-          ApkgOutput.MessageErr0("something seems to be broken, you can not use apkg");
+          LConsole.MessageErr0("error reloading package database");
+          LConsole.MessageErr0("something seems to be broken, you can not use apkg");
           return;
         }
         // re-install itself
@@ -81,19 +81,19 @@ namespace LeoConsole_apkg {
         try {
           url = repository.GetUrlFor("apkg");
         } catch (Exception e) {
-          ApkgOutput.MessageErr1("apkg not found in repository");
-          ApkgOutput.MessageErr0("something seems to be broken, you can not use apkg");
+          LConsole.MessageErr1("apkg not found in repository");
+          LConsole.MessageErr0("something seems to be broken, you can not use apkg");
           return;
         }
         string dlPath = Path.Join(data.SavePath, "tmp", "apkg.lcp");
         if (!ApkgUtils.DownloadFile(url, dlPath)) {
-          ApkgOutput.MessageErr1("could not download apkg");
-          ApkgOutput.MessageErr0("something seems to be broken, you can not use apkg");
+          LConsole.MessageErr1("could not download apkg");
+          LConsole.MessageErr0("something seems to be broken, you can not use apkg");
           return;
         }
         repository.InstallLcpkg(dlPath);
       }
-      ApkgOutput.MessageSuc1("self-check successfull");
+      LConsole.MessageSuc1("self-check successfull");
     }
     // }}}
 

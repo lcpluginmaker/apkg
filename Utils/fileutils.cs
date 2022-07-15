@@ -1,3 +1,4 @@
+using ILeoConsole.Core;
 using System.Text.Json;
 
 namespace LeoConsole_apkg {
@@ -18,7 +19,7 @@ namespace LeoConsole_apkg {
     public static void DeleteFiles(string[] files, string savePath) {
       foreach (string f in files) {
         string path = Path.Join(savePath, f);
-        ApkgOutput.MessageSuc1("deleting " + path);
+        LConsole.MessageSuc1("deleting " + path);
         File.Delete(path);
         FileUtils.DeleteParentDirs(path, savePath);
       }

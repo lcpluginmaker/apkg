@@ -1,3 +1,4 @@
+using ILeoConsole.Core;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -48,11 +49,11 @@ namespace LeoConsole_apkg {
         p.Start();
         p.WaitForExit();
         if (p.ExitCode != 0) {
-          ApkgOutput.MessageErr1($"{name} returned an error");
+          LConsole.MessageErr1($"{name} returned an error");
           return false;
         }
       } catch (Exception e) {
-        ApkgOutput.MessageErr1($"cannot run {name}: {e.Message}");
+        LConsole.MessageErr1($"cannot run {name}: {e.Message}");
         return false;
       }
       return true;
@@ -60,12 +61,12 @@ namespace LeoConsole_apkg {
 
     // DownloadFile() {{{
     public static bool DownloadFile(string url, string location) {
-      ApkgOutput.MessageSuc1($"downloading {url} to {location}...");
+      LConsole.MessageSuc1($"downloading {url} to {location}...");
       try {
         WebClient webClient = new WebClient();
         webClient.DownloadFile(url, location);
       } catch (Exception e) {
-        ApkgOutput.MessageErr1("cannot download: " + e.Message);
+        LConsole.MessageErr1("cannot download: " + e.Message);
         return false;
       }
       return true;

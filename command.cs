@@ -32,7 +32,7 @@ namespace LeoConsole_apkg {
     // Command() {{{
     public void Command() {
       if (_Arguments.Length < 2) {
-        ApkgOutput.MessageErr0("you need to provide a subcommand\n");
+        LConsole.MessageErr0("you need to provide a subcommand\n");
         apkg_do_help();
         return;
       }
@@ -51,7 +51,7 @@ namespace LeoConsole_apkg {
         case "build": apkg_do_build(); break;
         case "get-local": apkg_do_get_local(); break;
         default:
-          ApkgOutput.MessageErr0("apkg: unknown subcommand '" + _Arguments[1] + "'");
+          LConsole.MessageErr0("apkg: unknown subcommand '" + _Arguments[1] + "'");
           break;
       }
     }
@@ -61,20 +61,20 @@ namespace LeoConsole_apkg {
     // get() {{{
     private void apkg_do_get() {
       if (_Arguments.Length < 3){
-        ApkgOutput.MessageErr0("you need to provide a package name");
+        LConsole.MessageErr0("you need to provide a package name");
         return;
       }
       try {
         Repository.Reload(Config.Repositories);
       } catch (Exception e) {
-        ApkgOutput.MessageErr0("error reloading package database");
+        LConsole.MessageErr0("error reloading package database");
         return;
       }
       string url;
       try {
         url = Repository.GetUrlFor(_Arguments[2]);
       } catch (Exception e) {
-        ApkgOutput.MessageErr1("cannot find your package");
+        LConsole.MessageErr1("cannot find your package");
         return;
       }
       string dlPath = Path.Join(data.DownloadPath, "apkg", $"{_Arguments[2]}.lcp");
@@ -87,10 +87,10 @@ namespace LeoConsole_apkg {
     // get_local() {{{
     private void apkg_do_get_local() {
       if (!Config.DebugMode) {
-        ApkgOutput.MessageErr0("this command is only available in debug mode"); return;
+        LConsole.MessageErr0("this command is only available in debug mode"); return;
       }
       if (_Arguments.Length < 3) {
-        ApkgOutput.MessageErr0("you need to pass a file or folder to install");
+        LConsole.MessageErr0("you need to pass a file or folder to install");
         return;
       }
       if (Directory.Exists(_Arguments[2])) {
@@ -99,12 +99,12 @@ namespace LeoConsole_apkg {
             _Arguments[2],
             data.CurrentWorkingPath
             )) {
-          ApkgOutput.MessageErr0("error building plugin");
+          LConsole.MessageErr0("error building plugin");
           return;
         }
         foreach (string f in Directory.GetFiles(_Arguments[2])) {
           if (f.EndsWith(".lcp")) {
-            ApkgOutput.MessageSuc0("installing built archive: " + f);
+            LConsole.MessageSuc0("installing built archive: " + f);
             Repository.InstallLcpkg(f);
             return;
           }
@@ -112,7 +112,7 @@ namespace LeoConsole_apkg {
         return;
       }
       if (!_Arguments[2].EndsWith(".lcp")) {
-        ApkgOutput.MessageErr0("looks not like an lcp file");
+        LConsole.MessageErr0("looks not like an lcp file");
         return;
       }
       Repository.InstallLcpkg(_Arguments[2]);
@@ -121,15 +121,15 @@ namespace LeoConsole_apkg {
     // build() {{{
     private void apkg_do_build() {
       if (!Config.DebugMode) {
-        ApkgOutput.MessageErr0("this command is only available in debug mode");
+        LConsole.MessageErr0("this command is only available in debug mode");
         return;
       }
       if (_Arguments.Length < 3) {
-        ApkgOutput.MessageErr0("you need to pass a folder to build");
+        LConsole.MessageErr0("you need to pass a folder to build");
         return;
       }
       if (!Directory.Exists(_Arguments[2])) {
-        ApkgOutput.MessageErr0("the folder you passed doesn't exists");
+        LConsole.MessageErr0("the folder you passed doesn't exists");
         return;
       }
       ApkgUtils.RunProcess(
@@ -142,7 +142,7 @@ namespace LeoConsole_apkg {
     // update() {{{
     private void apkg_do_update() {
       IList<string> allPlugins = Repository.AvailablePlugins();
-      ApkgOutput.MessageSuc0("updating plugins:");
+      LConsole.MessageSuc0("updating plugins:");
       foreach (string p in allPlugins) {
         if (!Directory.Exists(Path.Join(data.SavePath, "var", "apkg", "installed", p))) {
           continue;
@@ -150,7 +150,7 @@ namespace LeoConsole_apkg {
         string installedVersion = File.ReadAllText(Path.Join(data.SavePath, "var", "apkg", "installed", p, "version")).Trim();
         string availableVersion = Repository.GetInfoFor(p).version;
         if (ApkgUtils.VersionGreater(availableVersion, installedVersion)) {
-          ApkgOutput.MessageSuc1($"update available for {p} (v{installedVersion} -> v{availableVersion})");
+          LConsole.MessageSuc1($"update available for {p} (v{installedVersion} -> v{availableVersion})");
           string url = Repository.GetUrlFor(_Arguments[2]);
           string dlPath = Path.Join(data.DownloadPath, "apkg", $"{_Arguments[2]}.lcp");
           if (!ApkgUtils.DownloadFile(url, dlPath)) {
@@ -160,25 +160,25 @@ namespace LeoConsole_apkg {
           continue;
         }
         if (ApkgUtils.VersionGreater(installedVersion, availableVersion)) {
-          ApkgOutput.MessageWarn1($"{p} is newer than repository (installed {installedVersion}, repo {availableVersion})");
+          LConsole.MessageWarn1($"{p} is newer than repository (installed {installedVersion}, repo {availableVersion})");
           continue;
         }
-        ApkgOutput.MessageSuc1($"{p} is up-to-date");
+        LConsole.MessageSuc1($"{p} is up-to-date");
       }
     } // }}}
 
     // list_installed() {{{
     private void apkg_do_list_installed() {
-      ApkgOutput.MessageSuc0("your installed packages:");
+      LConsole.MessageSuc0("your installed packages:");
       foreach (string filename in Directory.GetDirectories(
             Path.Join(ConfigFolder, "installed")
             )){
         string p = Path.GetFileName(filename);
         try {
           RepoPackage info = Repository.GetInfoFor(p);
-          ApkgOutput.MessageSuc1($"{p} - {info.description}");
+          LConsole.MessageSuc1($"{p} - {info.description}");
         } catch (Exception e) {
-          ApkgOutput.MessageErr1($"{p} not found: {e.Message}");
+          LConsole.MessageErr1($"{p} not found: {e.Message}");
         }
       }
     } // }}}
@@ -186,7 +186,7 @@ namespace LeoConsole_apkg {
     // remove() {{{
     private void apkg_do_remove() {
       if (_Arguments.Length < 3){
-        ApkgOutput.MessageErr0("you need to provide a package name to remove");
+        LConsole.MessageErr0("you need to provide a package name to remove");
         return;
       }
       Repository.RemovePackage(_Arguments[2]);
@@ -195,10 +195,10 @@ namespace LeoConsole_apkg {
     // list_avaiable() {{{
     private void apkg_do_list_available() {
       IList<string> list = Repository.AvailablePlugins();
-      ApkgOutput.MessageSuc0("available packages:");
+      LConsole.MessageSuc0("available packages:");
       foreach (string p in list) {
         RepoPackage info = Repository.GetInfoFor(p);
-        ApkgOutput.MessageSuc1($"{p} - {info.description}");
+        LConsole.MessageSuc1($"{p} - {info.description}");
       }
     } // }}}
     
@@ -206,7 +206,7 @@ namespace LeoConsole_apkg {
     private void apkg_do_search() {
       string keyword = _Arguments[2];
       IList<string> list = Repository.AvailablePlugins();
-      ApkgOutput.MessageSuc0("results:");
+      LConsole.MessageSuc0("results:");
       IList<string> matches = Enumerable.Empty<string>().ToList();
       foreach (string p in list) {
         if (p.ToLower().Contains(keyword.ToLower())) {
@@ -214,32 +214,32 @@ namespace LeoConsole_apkg {
         }
       }
       if (matches.Count < 1) {
-        ApkgOutput.MessageErr1("none");
+        LConsole.MessageErr1("none");
         return;
       }
       foreach (string p in matches) {
-        ApkgOutput.MessageSuc1(p);
+        LConsole.MessageSuc1(p);
       }
     } // }}}
 
     // info() {{{
     private void apkg_do_info() {
-      ApkgOutput.MessageSuc0("apkg information");
-      ApkgOutput.MessageSuc1(
+      LConsole.MessageSuc0("apkg information");
+      LConsole.MessageSuc1(
           $"cache/download directory:      {Path.Join(data.DownloadPath, "apkg")}");
-      ApkgOutput.MessageSuc1(
+      LConsole.MessageSuc1(
           $"plugin installation directory: {Path.Join(data.SavePath, "plugins")}");
-      ApkgOutput.MessageSuc1(
+      LConsole.MessageSuc1(
           $"share installation directory:  {Path.Join(data.SavePath, "share")}");
-      ApkgOutput.MessageSuc1(
+      LConsole.MessageSuc1(
           $"config/database directory:     {ConfigFolder}");
-      ApkgOutput.MessageSuc1(
+      LConsole.MessageSuc1(
           $"docs directory:                {Path.Join(data.SavePath, "share", "docs", "apkg")}");
-      ApkgOutput.MessageSuc1($"apkg version: {apkgVersion}");
+      LConsole.MessageSuc1($"apkg version: {apkgVersion}");
       if (Config.DebugMode) {
-        ApkgOutput.MessageWarn1("debug mode: ON");
+        LConsole.MessageWarn1("debug mode: ON");
       } else {
-        ApkgOutput.MessageSuc1("debug mode: off");
+        LConsole.MessageSuc1("debug mode: off");
       }
     } // }}}
 
@@ -248,7 +248,7 @@ namespace LeoConsole_apkg {
       try {
         Repository.Reload(Config.Repositories);
       } catch (Exception e) {
-        ApkgOutput.MessageErr0("error reloading package database");
+        LConsole.MessageErr0("error reloading package database");
       }
     } // }}}
 

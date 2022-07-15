@@ -1,3 +1,4 @@
+using ILeoConsole.Core;
 using System.Linq;
 
 namespace LeoConsole_apkg {
@@ -17,7 +18,7 @@ namespace LeoConsole_apkg {
 
     // Register() {{{
     public static void Register(string p, string pVersion, string[] f, string savePath) {
-      ApkgOutput.MessageSuc0($"registering package {p} v{pVersion}");
+      LConsole.MessageSuc0($"registering package {p} v{pVersion}");
       string baseDir = Path.Join(savePath, "var", "apkg", "installed", p);
       Directory.CreateDirectory(baseDir);
       File.WriteAllLines(Path.Join(baseDir, "files"), f);

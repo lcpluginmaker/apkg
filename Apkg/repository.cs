@@ -21,8 +21,8 @@ namespace LeoConsole_apkg {
       Index = Enumerable.Empty<RepoPackage>().ToList();
 
       if (!Directory.Exists(ReposFolder)) {
-        ApkgOutput.MessageWarn1("could not find repo cache, package list cannot be loaded");
-        ApkgOutput.MessageWarn1("please run 'apkg reload'");
+        LConsole.MessageWarn1("could not find repo cache, package list cannot be loaded");
+        LConsole.MessageWarn1("please run 'apkg reload'");
         return;
       }
 
@@ -78,7 +78,7 @@ namespace LeoConsole_apkg {
     public void Reload(ConfigRepo[] repos) {
       IList<RepoPackage> newIndex = Enumerable.Empty<RepoPackage>().ToList();
       foreach (ConfigRepo repo in repos) {
-        ApkgOutput.MessageSuc0("loading " + repo.name);
+        LConsole.MessageSuc0("loading " + repo.name);
         string tempFile = Path.Join(DownloadPath, repo.name + ".json");
         if (!ApkgUtils.DownloadFile(repo.url, tempFile)) {
           throw new Exception("error downloading " + repo.name);
@@ -106,7 +106,7 @@ namespace LeoConsole_apkg {
       }
       Directory.CreateDirectory(extractPath);
       // extract package archive
-      ApkgOutput.MessageSuc0("extracting package");
+      LConsole.MessageSuc0("extracting package");
       ZipFile.ExtractToDirectory(path, extractPath);
       return extractPath;
     } // }}}
@@ -114,7 +114,7 @@ namespace LeoConsole_apkg {
     // InstallFiles() {{{
     private void InstallFiles(string[] files, string packageDir) {
       foreach (string file in files) {
-        ApkgOutput.MessageSuc1("copying " + file);
+        LConsole.MessageSuc1("copying " + file);
         Directory.CreateDirectory(Directory.GetParent(Path.Join(SavePath, file)).FullName);
         // copy file
         File.Copy(Path.Join(packageDir, file), Path.Join(SavePath, file), true);
@@ -122,9 +122,9 @@ namespace LeoConsole_apkg {
             (file.StartsWith("share/scripts") || file.StartsWith("share/go-plugin")) 
             && ApkgUtils.GetRunningOS() == "lnx64"
             ) {
-          ApkgOutput.MessageSuc1($"marking {file} as executable");
+          LConsole.MessageSuc1($"marking {file} as executable");
           if (!ApkgUtils.RunProcess("chmod", "+x " + Path.Join(SavePath, file), SavePath)) {
-            ApkgOutput.MessageWarn1($"cannot mark {file} as executable");
+            LConsole.MessageWarn1($"cannot mark {file} as executable");
           }
         }
       }
@@ -132,22 +132,22 @@ namespace LeoConsole_apkg {
 
     // InstallLcpkg() {{{
     public void InstallLcpkg(string archiveFile) {
-      ApkgOutput.MessageSuc0("installing package");
-      ApkgOutput.MessageSuc1("preparing to extract package");
+      LConsole.MessageSuc0("installing package");
+      LConsole.MessageSuc1("preparing to extract package");
 
       string tempFolder = "";
       try {
         tempFolder = ExtractLcp(archiveFile);
       } catch (Exception e) {
-        ApkgOutput.MessageErr0($"cannot extract lcp archive: {e.Message}");
+        LConsole.MessageErr0($"cannot extract lcp archive: {e.Message}");
         return;
       }
 
-      ApkgOutput.MessageSuc0("checking package compatibility");
+      LConsole.MessageSuc0("checking package compatibility");
       PkgArchiveManifest manifest = FileUtils.ReadManifest(tempFolder);
       
       if (!Array.Exists(manifest.compatibleVersions, e => e == LeoConsoleVersion)) {
-        ApkgOutput.MessageErr1("your LeoConsole version is incompatible with this plugin");
+        LConsole.MessageErr1("your LeoConsole version is incompatible with this plugin");
         return;
       }
 
@@ -157,7 +157,7 @@ namespace LeoConsole_apkg {
         try {
           url = GetUrlFor(pack);
         } catch (Exception e) {
-          ApkgOutput.MessageErr1("cannot find a dependency");
+          LConsole.MessageErr1("cannot find a dependency");
           return;
         }
         string dlPath = Path.Join(DownloadPath, $"{pack}.lcp");
@@ -171,46 +171,46 @@ namespace LeoConsole_apkg {
       string conflictsWith = ApkgIntegrity.CheckPkgConflicts(manifest.files, SavePath);
       if (conflictsWith != "") {
         if (conflictsWith != manifest.packageName) {
-          ApkgOutput.MessageErr0($"{manifest.packageName} conflicts with {conflictsWith}, aborting install");
+          LConsole.MessageErr0($"{manifest.packageName} conflicts with {conflictsWith}, aborting install");
           return;
         }
         // conflicting with itself ask about reinstalling {{{
         string installedVersion = File.ReadAllText(Path.Join(ConfigDir, "installed", manifest.packageName, "version")).Trim();
         if (installedVersion == manifest.packageVersion) {
           if (!LConsole.YesNoDialog("reinstall same package version?", true)) {
-            ApkgOutput.MessageErr1("installation aborted");
+            LConsole.MessageErr1("installation aborted");
             return;
           }
         }
         if (ApkgUtils.VersionGreater(installedVersion, manifest.packageVersion)) {
           if (!LConsole.YesNoDialog($"downgrade package ({installedVersion}->{manifest.packageVersion})?", false)) {
-            ApkgOutput.MessageErr1("installation aborted");
+            LConsole.MessageErr1("installation aborted");
             return;
           }
         } // }}}
         RemovePackage(manifest.packageName);
       } // }}}
 
-      ApkgOutput.MessageSuc0($"installing files for {manifest.project.maintainer}/{manifest.packageName}");
+      LConsole.MessageSuc0($"installing files for {manifest.project.maintainer}/{manifest.packageName}");
       InstallFiles(manifest.files, tempFolder);
 
       ApkgIntegrity.Register(
           manifest.packageName, manifest.packageVersion, manifest.files, SavePath
           );
-      ApkgOutput.MessageSuc0("successfully installed " + manifest.packageName);
+      LConsole.MessageSuc0("successfully installed " + manifest.packageName);
     } // }}}
 
     // RemovePackage() {{{
     public void RemovePackage(string p) {
-      ApkgOutput.MessageSuc0("removing " + p);
+      LConsole.MessageSuc0("removing " + p);
       if (!Directory.Exists(Path.Join(ConfigDir, "installed", p))) {
-        ApkgOutput.MessageErr0($"{p} is not installed");
+        LConsole.MessageErr0($"{p} is not installed");
         return;
       }
       try {
         FileUtils.DeleteFiles(File.ReadLines(Path.Join(ConfigDir, "installed", p, "files")).ToArray(), SavePath);
       } catch (Exception e) {
-        ApkgOutput.MessageErr0("removing package failed: " + e.Message);
+        LConsole.MessageErr0("removing package failed: " + e.Message);
         return;
       }
       ApkgIntegrity.Unregister(p, SavePath);

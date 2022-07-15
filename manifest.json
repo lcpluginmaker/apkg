@@ -3,7 +3,7 @@
   "packageName": "apkg",
   "packageVersion": "1.3.0",
   "depends": [],
-  "compatibleVersions": ["2.0.0"],
+  "compatibleVersions": ["2.1.0"],
   "build": {
     "command": "/bin/sh",
     "args": ["./build.sh"],
