@@ -13,3 +13,7 @@ save different pieces of data.
  - [Repositories](./Repositories.html) - how they work / how to set up one
  - [PKGINFO.json](./PKGINFO.html) - What the PKGINFO file is
 
+# Hacking on apkg
+
+ - [Writing extensions](./Extensions.html)
+
