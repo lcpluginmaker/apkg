@@ -11,10 +11,12 @@ namespace LeoConsole_apkg {
     private string DownloadPath;
     private string ReposFolder;
     private string LeoConsoleVersion;
+    private bool DebugMode;
 
-    public ApkgRepository(string sp, string v) {
+    public ApkgRepository(string sp, string v, bool dm) {
       LeoConsoleVersion = v;
       SavePath = sp;
+      DebugMode = dm;
       DownloadPath = Path.Join(SavePath, "tmp", "apkg");
       ConfigDir = Path.Join(SavePath, "var", "apkg");
       ReposFolder = Path.Join(ConfigDir, "repos-index");
@@ -119,9 +121,14 @@ namespace LeoConsole_apkg {
         // copy file
         File.Copy(Path.Join(packageDir, file), Path.Join(SavePath, file), true);
         if (
-            (file.StartsWith("share/scripts") || file.StartsWith("share/go-plugin")) 
+          (
+            file.StartsWith("share/scripts")
+            || file.StartsWith("share/go-plugin")
+            || file.StartsWith("share/apkg/bin")
+            || (file.StartsWith("share/apkg/extensions") && !file.EndsWith(".json"))
+          )
             && ApkgUtils.GetRunningOS() == "lnx64"
-            ) {
+        ) {
           LConsole.MessageSuc1($"marking {file} as executable");
           if (!ApkgUtils.RunProcess("chmod", "+x " + Path.Join(SavePath, file), SavePath)) {
             LConsole.MessageWarn1($"cannot mark {file} as executable");
@@ -153,6 +160,11 @@ namespace LeoConsole_apkg {
 
       // install dependencies {{{
       foreach (string pack in manifest.depends) {
+        if (Directory.Exists(Path.Join(ConfigDir, "installed", pack))) {
+          LConsole.MessageSuc1($"dependency {pack} already installed");
+          continue;
+        }
+        LConsole.MessageSuc0($"installing dependency {pack}");
         string url;
         try {
           url = GetUrlFor(pack);
@@ -177,15 +189,23 @@ namespace LeoConsole_apkg {
         // conflicting with itself ask about reinstalling {{{
         string installedVersion = File.ReadAllText(Path.Join(ConfigDir, "installed", manifest.packageName, "version")).Trim();
         if (installedVersion == manifest.packageVersion) {
-          if (!LConsole.YesNoDialog("reinstall same package version?", true)) {
-            LConsole.MessageErr1("installation aborted");
-            return;
+          if (DebugMode) {
+            LConsole.MessageWarn1("reinstalling same package version");
+          } else {
+            if (!LConsole.YesNoDialog("reinstall same package version?", true)) {
+              LConsole.MessageErr1("installation aborted");
+              return;
+            }
           }
         }
         if (ApkgUtils.VersionGreater(installedVersion, manifest.packageVersion)) {
-          if (!LConsole.YesNoDialog($"downgrade package ({installedVersion}->{manifest.packageVersion})?", false)) {
-            LConsole.MessageErr1("installation aborted");
-            return;
+          if (DebugMode) {
+            LConsole.MessageWarn1("downgrading package");
+          } else {
+            if (!LConsole.YesNoDialog($"downgrade package ({installedVersion}->{manifest.packageVersion})?", false)) {
+              LConsole.MessageErr1("installation aborted");
+              return;
+            }
           }
         } // }}}
         RemovePackage(manifest.packageName);

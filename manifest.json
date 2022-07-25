@@ -1,10 +1,19 @@
 {
-  "manifestVersion": 3.0,
+  "manifestVersion": 4.0,
   "packageName": "apkg",
-  "packageVersion": "1.3.0",
+  "packageVersion": "2.0.0",
   "depends": [],
   "compatibleVersions": ["2.1.0"],
   "build": {
+    "folders": ["share/apkg/bin", "share/apkg/extensions", "share/docs/apkg"],
+    "downloads": [
+      {
+        "url:win64": "https://github.com/alexcoder04/LeoConsole-apkg-builder/releases/latest/download/apkg-build-win64.exe",
+        "url:lnx64": "https://github.com/alexcoder04/LeoConsole-apkg-builder/releases/latest/download/apkg-build-lnx64",
+        "path:win64": "share/apkg/bin/apkg-build-win64.exe",
+        "path:lnx64": "share/apkg/bin/apkg-build-lnx64"
+      }
+    ],
     "command": "/bin/sh",
     "args": ["./build.sh"],
     "folder": ".",

@@ -21,7 +21,7 @@ namespace LeoConsole_apkg {
 
     // GetBuilderPath() {{{
     public static string GetBuilderPath(string savePath) {
-      string basePath = Path.Join(savePath, "share", "scripts");
+      string basePath = Path.Join(savePath, "share", "apkg", "bin");
       if (GetRunningOS() == "lnx64") {
         string path = Path.Join(basePath, "apkg-build-lnx64");
         if (File.Exists(path)) {

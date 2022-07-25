@@ -67,7 +67,7 @@ namespace LeoConsole_apkg {
       // install itself if not installed {{{
       if (!Directory.Exists(Path.Join(data.SavePath, "var", "apkg", "installed", "apkg"))) {
         ApkgConfig config = ApkgConfigHelper.ReadConfig(Path.Join(data.SavePath, "var", "apkg"));
-        ApkgRepository repository = new ApkgRepository(data.SavePath, data.Version);
+        ApkgRepository repository = new ApkgRepository(data.SavePath, data.Version, false);
         // reload
         try {
           repository.Reload(config.Repositories);

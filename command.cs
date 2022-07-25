@@ -18,15 +18,17 @@ namespace LeoConsole_apkg {
     // variables {{{
     private ApkgRepository Repository;
     private ApkgConfig Config;
+    private ApkgExtensionManager ExtensionManager;
 
-    private const string apkgVersion="1.3.0";
+    private const string apkgVersion="2.0.0";
     private string ConfigFolder;
     // }}}
 
     public LeoConsoleApkgCommand(string savePath, string lcVersion) {
-      Repository = new ApkgRepository(savePath, lcVersion);
       ConfigFolder = Path.Join(savePath, "var", "apkg");
       Config = ApkgConfigHelper.ReadConfig(ConfigFolder);
+      Repository = new ApkgRepository(savePath, lcVersion, Config.DebugMode);
+      ExtensionManager = new ApkgExtensionManager(savePath);
     }
 
     // Command() {{{
@@ -38,19 +40,22 @@ namespace LeoConsole_apkg {
       }
 
       switch (_Arguments[1]) {
-        case "get": apkg_do_get(); break;
-        case "help": apkg_do_help(); break;
-        case "info": apkg_do_info(); break;
-        case "install": apkg_do_get(); break;
-        case "list-available": apkg_do_list_available(); break;
-        case "list-installed": apkg_do_list_installed(); break;
-        case "reload": apkg_do_reload(); break;
-        case "remove": apkg_do_remove(); break;
-        case "search": apkg_do_search(); break;
-        case "update": apkg_do_update(); break;
-        case "build": apkg_do_build(); break;
-        case "get-local": apkg_do_get_local(); break;
+        case "b": case "build": case "compile": apkg_do_build(); break;
+        case "d": case "remove": case "uninstall": case "delete": apkg_do_remove(); break;
+        case "g": case "get": case "install": apkg_do_get(); break;
+        case "gl": case "get-local": apkg_do_get_local(); break;
+        case "h": case "help": apkg_do_help(); break;
+        case "i": case "info": apkg_do_info(); break;
+        case "la": case "list-available": apkg_do_list_available(); break;
+        case "li": case "list-installed": apkg_do_list_installed(); break;
+        case "r": case "reload": apkg_do_reload(); break;
+        case "s": case "search": apkg_do_search(); break;
+        case "u": case "update": apkg_do_update(); break;
         default:
+          if (ExtensionManager.Exists(_Arguments[1])) {
+            ExtensionManager.Run(_Arguments);
+            break;
+          }
           LConsole.MessageErr0("apkg: unknown subcommand '" + _Arguments[1] + "'");
           break;
       }
@@ -62,12 +67,6 @@ namespace LeoConsole_apkg {
     private void apkg_do_get() {
       if (_Arguments.Length < 3){
         LConsole.MessageErr0("you need to provide a package name");
-        return;
-      }
-      try {
-        Repository.Reload(Config.Repositories);
-      } catch (Exception e) {
-        LConsole.MessageErr0("error reloading package database");
         return;
       }
       string url;
@@ -92,6 +91,9 @@ namespace LeoConsole_apkg {
       if (_Arguments.Length < 3) {
         LConsole.MessageErr0("you need to pass a file or folder to install");
         return;
+      }
+      if (_Arguments[2].StartsWith("~")) {
+        _Arguments[2] = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), _Arguments[2].Trim("~".ToCharArray()));
       }
       if (Directory.Exists(_Arguments[2])) {
         if (!ApkgUtils.RunProcess(
@@ -178,7 +180,7 @@ namespace LeoConsole_apkg {
           RepoPackage info = Repository.GetInfoFor(p);
           LConsole.MessageSuc1($"{p} - {info.description}");
         } catch (Exception e) {
-          LConsole.MessageErr1($"{p} not found: {e.Message}");
+          LConsole.MessageErr1($"{p} (not found in remote)");
         }
       }
     } // }}}
@@ -260,20 +262,27 @@ apkg is an advanced package tool for LeoConsole
 For more detailed documentation see '$SAVEPATH/share/docs/apkg'
 
 Available options:
-    get/install:    install package
-    help:           print this help
-    info:           print where the plugins are downloaded and installed to
-    list-available: list available plugins
-    list-installed: list installed plugins
-    remove:         remove package
-    search:         search for a package
-    reload:         reload package database
-    update:         update packages");
+    g(et)/install:             install package
+    h(elp):                    print this help
+    i(nfo):                    print where the plugins are downloaded and installed to
+    l(ist-)a(vailable):        list available plugins
+    l(ist-)i(nstalled):        list installed plugins
+    d(elete)/remove/uninstall: remove package
+    s(earch):                  search for a package
+    r(eload):                  reload package database
+    u(pdate):                  update packages");
+
+      Console.WriteLine(@"
+Available extension options:");
+      foreach (ApkgExtensionInfo e in ExtensionManager.GetList()) {
+        Console.WriteLine($"    {e.Name} by {e.Author}: {e.Description}");
+      }
+
       if (Config.DebugMode) {
         Console.WriteLine(@"
 Available options in debug mode:
-    build:         build plugin in directory
-    get-local:     install local .lcp file");
+    b(uild)/compile:           build plugin in directory
+    g(et-)l(ocal):             install local .lcp file");
       }
     } // }}}
     // }}}
