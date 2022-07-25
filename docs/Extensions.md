@@ -6,8 +6,8 @@ An extension is a subcommand for apkg. Extensions are placed in
 
 ```text
 share/apkg/extensions
- | - installed-number (executable binary)
- | - installed-number.json (metadata file)
+ | - installed-number      -> executable binary
+ | - installed-number.json -> metadata file
  | ...
 ```
 
@@ -19,6 +19,18 @@ share/apkg/extensions
     "description": "print number of installed packages",
     "author": "alexcoder04@protonmail.com",
     "disabled": false
+}
+```
+
+## Extension call
+
+When an extension is called, it gets a base64-encoded argument, which contains
+following json data:
+
+```json
+{
+    "args": ["arg1", "arg2"],
+    "savePath": "/path/to/leoconsole/savepath"
 }
 ```
 

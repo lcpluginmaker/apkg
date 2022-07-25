@@ -11,7 +11,7 @@ The manifest file tells apkg how to build a package.
     "depends": [],
     "compatibleVersions": ["2.1.0"],
     "build": {
-        "folders": ["share/apkg/bin", "share/docs/apkg"],
+        "create": ["share/apkg/bin", "share/docs/apkg"],
         "downloads": [
             {
                 "url:win64": "https://github.com/alexcoder04/LeoConsole-apkg-builder/releases/latest/download/apkg-build-win64.exe",
@@ -42,8 +42,10 @@ The manifest file tells apkg how to build a package.
  - `depends` lists other packages that are required to use this plugin
  - `compatibleVersions` is a list of LeoConsole versions this plugin is compatible with
  - `build`:
-   - `folders` are the folders that will be created at build. If they exist, they will be deleted and created again
+   - `create` are the folders that will be created at build. If they exist, they will be deleted and created again
    - `downloads` is a list of files to download, `path(:OS)` tells where to place the downloaded file. They can be specific to the OS
-   - the `dlls` array tells which dll files need to be installed, the `share` string specifies the folder with the files that go into `share`
- - the `project` key specifies some metadata about the project and the maintainer
+   - `command` and `args` is what is being executed to build your plugin (custom build scripts possible)
+   - the `dlls` array tells which dll files need to be installed
+   - `share` specifies the folder with the files that go into `share`
+ - the `project` key specifies metadata about the project and the maintainer
 
