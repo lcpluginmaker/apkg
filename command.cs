@@ -96,11 +96,11 @@ namespace LeoConsole_apkg {
         _Arguments[2] = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), _Arguments[2].Trim("~".ToCharArray()));
       }
       if (Directory.Exists(_Arguments[2])) {
-        if (!ApkgUtils.RunProcess(
+        if (Processes.Run(
             ApkgUtils.GetBuilderPath(data.SavePath),
             _Arguments[2],
             data.CurrentWorkingPath
-            )) {
+            ) != 0) {
           LConsole.MessageErr0("error building plugin");
           return;
         }
@@ -134,11 +134,7 @@ namespace LeoConsole_apkg {
         LConsole.MessageErr0("the folder you passed doesn't exists");
         return;
       }
-      ApkgUtils.RunProcess(
-          ApkgUtils.GetBuilderPath(data.SavePath),
-          _Arguments[2],
-          data.CurrentWorkingPath
-          );
+      Processes.Run(ApkgUtils.GetBuilderPath(data.SavePath), _Arguments[2], data.CurrentWorkingPath);
     } // }}}
 
     // update() {{{

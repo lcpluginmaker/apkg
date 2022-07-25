@@ -115,11 +115,11 @@ namespace LeoConsole_apkg {
           continue;
         }
 
-        if (!ApkgUtils.RunProcess(
+        if (Processes.Run(
               Path.Join(ExtensionsFolder, m.name),
               EncodeData(new ArraySegment<string>(args, 2, args.Length-2).ToArray()),
               SavePath
-              )) {
+              ) != 0) {
           LConsole.MessageErr0($"{m.name} extension failed to run");
         }
         return;

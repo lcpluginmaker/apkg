@@ -3,7 +3,7 @@
   "packageName": "apkg",
   "packageVersion": "2.0.0",
   "depends": [],
-  "compatibleVersions": ["2.1.0"],
+  "compatibleVersions": ["2.2.0"],
   "build": {
     "folders": ["share/apkg/bin", "share/apkg/extensions", "share/docs/apkg"],
     "downloads": [

@@ -39,26 +39,6 @@ namespace LeoConsole_apkg {
       throw new Exception("unknown OS");
     } // }}}
 
-    // RunProcess() {{{
-    public static bool RunProcess(string name, string args, string pwd) {
-      try {
-        Process p = new Process();
-        p.StartInfo.FileName = name;
-        p.StartInfo.Arguments = args;
-        p.StartInfo.WorkingDirectory = pwd;
-        p.Start();
-        p.WaitForExit();
-        if (p.ExitCode != 0) {
-          LConsole.MessageErr1($"{name} returned an error");
-          return false;
-        }
-      } catch (Exception e) {
-        LConsole.MessageErr1($"cannot run {name}: {e.Message}");
-        return false;
-      }
-      return true;
-    } // }}}
-
     // DownloadFile() {{{
     public static bool DownloadFile(string url, string location) {
       LConsole.MessageSuc1($"downloading {url} to {location}...");

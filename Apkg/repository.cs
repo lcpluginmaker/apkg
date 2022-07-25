@@ -130,7 +130,7 @@ namespace LeoConsole_apkg {
             && ApkgUtils.GetRunningOS() == "lnx64"
         ) {
           LConsole.MessageSuc1($"marking {file} as executable");
-          if (!ApkgUtils.RunProcess("chmod", "+x " + Path.Join(SavePath, file), SavePath)) {
+          if (Processes.Run("chmod", "+x " + Path.Join(SavePath, file), SavePath) != 0) {
             LConsole.MessageWarn1($"cannot mark {file} as executable");
           }
         }
