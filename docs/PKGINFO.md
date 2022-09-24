@@ -16,8 +16,8 @@
     "project": {
         "maintainer": "alexcoder04",
         "email": "alexcoder04@protonmail.com",
-        "homepage": "https://github.com/alexcoder04/LeoConsole-apkg",
-        "bugTracker": "https://github.com/alexcoder04/LeoConsole-apkg/issues"
+        "homepage": "https://github.com/lcpluginmaker/apkg",
+        "bugTracker": "https://github.com/lcpluginmaker/apkg/issues"
     }
 }
 ```

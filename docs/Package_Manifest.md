@@ -14,7 +14,7 @@ The manifest file tells apkg how to build a package.
         "create": ["share/apkg/bin", "share/docs/apkg"],
         "downloads": [
             {
-                "url:win64": "https://github.com/alexcoder04/LeoConsole-apkg-builder/releases/latest/download/apkg-build-win64.exe",
+                "url:win64": "https://github.com/lcpluginmaker/apkg-builder/releases/latest/download/apkg-build-win64.exe",
                 "url:lnx64": "https://github.com/lcpluginmaker/apkg-builder/releases/latest/download/apkg-build-lnx64",
                 "path:win64": "share/apkg/bin/apkg-build-win64.exe",
                 "path:lnx64": "share/apkg/bin/apkg-build-lnx64"
@@ -29,8 +29,8 @@ The manifest file tells apkg how to build a package.
     "project": {
         "maintainer": "alexcoder04",
         "email": "alexcoder04@protonmail.com",
-        "homepage": "https://github.com/alexcoder04/LeoConsole-apkg",
-        "bugTracker": "https://github.com/alexcoder04/LeoConsole-apkg/issues"
+        "homepage": "https://github.com/lcpluginmaker/apkg",
+        "bugTracker": "https://github.com/lcpluginmaker/apkg/issues"
     }
 }
 ```

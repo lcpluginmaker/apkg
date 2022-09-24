@@ -70,7 +70,7 @@ namespace LeoConsole_apkg {
     // PrintCopyright() {{{
     public static void PrintCopyright(){
       Console.WriteLine(@"
-Source code is available on <https://github.com/alexcoder04/LeoConsole-apkg>
+Source code is available on <https://github.com/lcpluginmaker/apkg>
 
 LeoConsole-apkg-plugin Copyright (c) 2022 alexcoder04
 This program comes with ABSOLUTELY NO WARRANTY.
