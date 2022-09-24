@@ -15,7 +15,7 @@ namespace LeoConsole_apkg {
   // }}}
 
   public class ApkgConfigHelper {
-    private static string DefaultRepoUrl = "https://raw.githubusercontent.com/alexcoder04/LeoConsole-repo-main/main/index.json";
+    private static string DefaultRepoUrl = "https://raw.githubusercontent.com/lcpluginmaker/repo-main/main/index.json";
 
     // DefaultConfig() {{{
     private static ApkgConfig DefaultConfig() {

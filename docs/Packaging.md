@@ -15,6 +15,6 @@ more info about the APIs and how to write your plugins refer to the
    folder, generates a PKGINFO and compresses everything into a `.lcp` archive
    which can be installed using apkg.
 4. You can then add your plugin to the
-   [contrib repository](https://github.com/alexcoder04/LeoConsole-repo-contrib)
+   [contrib repository](https://github.com/lcpluginmaker/repo-contrib)
    by opening a pull request there.
 

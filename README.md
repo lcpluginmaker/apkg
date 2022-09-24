@@ -32,7 +32,7 @@ version.
 You can also try out the latest unpublished version (keep in mind, it could be
 unstable):
 
-1. Install [apkg-builder](https://github.com/alexcoder04/LeoConsole-apkg-builder)
+1. Install [apkg-builder](https://github.com/lcpluginmaker/apkg-builder)
 2. `git clone https://github.com/alexcoder04/LeoConsole-apkg.git && cd LeoConsole-apkg`
 3. `apkg-builder "$PWD"`
 4. Enable debug mode in apkg (add `debugModeOn` to your `$SAVEPATH/var/apkg/config`)
