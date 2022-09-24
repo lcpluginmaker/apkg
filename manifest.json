@@ -3,9 +3,9 @@
   "packageName": "apkg",
   "packageVersion": "2.0.0",
   "depends": [],
-  "compatibleVersions": ["2.2.0"],
+  "compatibleVersions": ["2.2.0", "2.1.0"],
   "build": {
-    "folders": ["share/apkg/bin", "share/apkg/extensions", "share/docs/apkg"],
+    "create": ["share/apkg/bin", "share/apkg/extensions", "share/docs/apkg"],
     "downloads": [
       {
         "url:win64": "https://github.com/alexcoder04/LeoConsole-apkg-builder/releases/latest/download/apkg-build-win64.exe",

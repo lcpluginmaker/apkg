@@ -10,7 +10,3 @@ See [Locations](./Locations.html) to learn, where LeoConsole and other plugins s
  - [Repositories](./Repositories.html) - how they work / how to set up one
  - [PKGINFO.json](./PKGINFO.html) - format of the auto-generated PKGINFO in the package archive
 
-# Hacking on apkg
-
- - [Writing extensions](./Extensions.html)
-

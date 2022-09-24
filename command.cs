@@ -18,7 +18,6 @@ namespace LeoConsole_apkg {
     // variables {{{
     private ApkgRepository Repository;
     private ApkgConfig Config;
-    private ApkgExtensionManager ExtensionManager;
 
     private const string apkgVersion="2.0.0";
     private string ConfigFolder;
@@ -28,7 +27,6 @@ namespace LeoConsole_apkg {
       ConfigFolder = Path.Join(savePath, "var", "apkg");
       Config = ApkgConfigHelper.ReadConfig(ConfigFolder);
       Repository = new ApkgRepository(savePath, lcVersion, Config.DebugMode);
-      ExtensionManager = new ApkgExtensionManager(savePath);
     }
 
     // Command() {{{
@@ -52,10 +50,6 @@ namespace LeoConsole_apkg {
         case "s": case "search": apkg_do_search(); break;
         case "u": case "update": apkg_do_update(); break;
         default:
-          if (ExtensionManager.Exists(_Arguments[1])) {
-            ExtensionManager.Run(_Arguments);
-            break;
-          }
           LConsole.MessageErr0("apkg: unknown subcommand '" + _Arguments[1] + "'");
           break;
       }
@@ -267,12 +261,6 @@ Available options:
     s(earch):                  search for a package
     r(eload):                  reload package database
     u(pdate):                  update packages");
-
-      Console.WriteLine(@"
-Available extension options:");
-      foreach (ApkgExtensionInfo e in ExtensionManager.GetList()) {
-        Console.WriteLine($"    {e.Name} by {e.Author}: {e.Description}");
-      }
 
       if (Config.DebugMode) {
         Console.WriteLine(@"

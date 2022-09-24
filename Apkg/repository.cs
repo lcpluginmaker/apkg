@@ -125,7 +125,6 @@ namespace LeoConsole_apkg {
             file.StartsWith("share/scripts")
             || file.StartsWith("share/go-plugin")
             || file.StartsWith("share/apkg/bin")
-            || (file.StartsWith("share/apkg/extensions") && !file.EndsWith(".json"))
           )
             && ApkgUtils.GetRunningOS() == "lnx64"
         ) {
