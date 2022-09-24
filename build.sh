@@ -8,5 +8,5 @@ sed -Ei "s/apkgVersion\\s?=\\s?\".*\"/apkgVersion=\"$version\"/" "./command.cs"
 dotnet build --nologo --verbosity quiet || exit 1
 
 # copy docs
-cp -vr "./docs/"*.md "./share/docs/apkg/"
+cp -vr "./docs/"*.md "./share/docs/apkg/" || exit 1
 
